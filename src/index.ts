@@ -1,15 +1,15 @@
 import express, { Request, Response } from 'express'
+import { connectDB } from './config/db'
+
+connectDB()
 
 const app = express()
+const port = process.env.PORT || 5000
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
-app.get('/', (req: Request, res: Response) => {
-  res.send(`
-    <div>
-      <h1>HI, sup?!</h1>
-    </div>
-  `)
-})
+// app.use(errorHandler)
 
-app.listen(8000, () => {
-  console.log('listening on port 8000')
-})
+app.listen(port, () => console.log(`Server started on post: ${port}`))
+
+
