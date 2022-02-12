@@ -8,8 +8,8 @@ const mongoose_1 = __importDefault(require("mongoose"));
 exports.userSchema = new mongoose_1.default.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String },
-    isAdmin: { type: Boolean, default: false },
-    isVerified: { type: Boolean, default: false },
-    isProtected: { type: Boolean, default: false },
-});
+    password: { type: String, required: true, minlength: 6 },
+    posts: [{ type: mongoose_1.default.Types.ObjectId, ref: 'Post', default: [] }]
+}, { timestamps: true });
+const User = mongoose_1.default.model("User", exports.userSchema);
+exports.default = User;
