@@ -12,61 +12,66 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+exports.register = exports.getUserByUsername = exports.getUsers = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
-const registerUser = express_async_handler_1.default((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, email, password } = req.body;
-    if (!username || !email || !password) {
-        res.status(400);
-        throw new Error('Please fill in all fields');
+const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield userModel_1.default.find();
+        return res.json(user);
     }
-    // check if user exists
-    const userExists = yield userModel_1.default.findOne({ email });
-    if (userExists) {
-        res.status(400);
-        throw new Error('User already exists');
+    catch (error) {
+        throw new Error('unable to get users');
     }
-    // hash password
-    const salt = yield bcryptjs_1.default.genSalt(10);
-    const hashedPassword = yield bcryptjs_1.default.hash(password, salt);
-    const user = yield userModel_1.default.create({
-        username,
-        email,
-        password: hashedPassword,
-        token: generateToken(user._id)
-    });
-    if (user) {
-        res.status(201).json({
-            _id: user.id,
-            username: user.name,
-            email: user.email
+});
+exports.getUsers = getUsers;
+const getUserByUsername = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield userModel_1.default.find({ username: req.params.username });
+        if (!user)
+            res.status(403).json(`User ${user} not found`);
+        return res.status(200).json(user);
+    }
+    catch (error) {
+    }
+});
+exports.getUserByUsername = getUserByUsername;
+const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let user = yield userModel_1.default.findOne({ email: req.body.email });
+        if (user)
+            return res.status(400).send('User already registered.');
+        const salt = yield bcryptjs_1.default.genSalt(10);
+        user = new userModel_1.default({
+            username: req.body.username,
+            email: req.body.email,
+            password: yield bcryptjs_1.default.hash(req.body.password, salt),
         });
+        yield user.save();
+        const token = user.generateAuthToken();
+        // const token = jwt.sign({ _id: user._id, name: user.name }, process.env.JWT);
+        return res
+            .header('x-auth-token', token)
+            .header('access-control-expose-headers', 'x-auth-token')
+            .send({ _id: user._id, username: user.username, email: user.email });
     }
-    else {
-        res.status(400);
-        throw new Error('Invalid user data');
+    catch (error) {
+        throw new Error('trouble making a new user');
     }
-}));
-const loginUser = express_async_handler_1.default((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
-    //check for user email
-    const user = yield userModel_1.default.findOne({ email });
-    if (user && (yield bcryptjs_1.default.compare(password, user.password))) {
-        res.json({
-            _id: user.id,
-            username: user.username,
-            email: user.email,
-            token: generateToken(user._id)
-        });
-    }
-    else {
-        res.status(400);
-        throw new Error('Invalid credentials');
-    }
-}));
-// generate jwt token
-const generateToken = (id) => {
-    return jsonwebtoken_1.default.sign({ id }, process.env.JWT, { expiresIn: '30d' });
-};
+});
+exports.register = register;
+// const userExists = await User.findOne({ email: req.body.email })
+// if (userExists) return res.status(400).json(`Account with email ${req.body.email} already exists`)
+// const salt = await bcrypt.genSalt(10)
+// const hashedPassword = await bcrypt.hash(req.body.password, salt)
+// const user = await new User({
+//   username: req.body.username,
+//   email: req.body.email,
+//   password: hashedPassword,
+// })
+// await user.save()
+// const token = user.generateAuthToken()
+// return res
+// .header('x-auth-token', token)
+// .header('access-control-expose-headers', 'x-auth-token')
+// .send({ _id: user._id, username: user.username, email: user.email });

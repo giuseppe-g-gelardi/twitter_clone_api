@@ -1,67 +1,72 @@
 import { Request, Response } from 'express'
-import asyncHandler from 'express-async-handler'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import User from '../models/userModel'
 
-const registerUser = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-  const { username, email, password } = req.body
-
-  if (!username || !email || !password) {
-    res.status(400)
-    throw new Error('Please fill in all fields')
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const user = await User.find()
+    return res.json(user)
+  } catch (error) {
+    throw new Error('unable to get users')
   }
-
-  // check if user exists
-  const userExists = await User.findOne({ email })
-  if (userExists) {
-    res.status(400) 
-    throw new Error('User already exists')
-  }
-  
-  // hash password
-  const salt = await bcrypt.genSalt(10)
-  const hashedPassword = await bcrypt.hash(password, salt)
-
-  const user = await User.create({
-    username,
-    email,
-    password: hashedPassword,
-    token: generateToken(user._id)
-  })
-
-  if (user) {
-    res.status(201).json({
-      _id: user.id,
-      username: user.name,
-      email: user.email
-    })
-  } else {
-    res.status(400)
-    throw new Error('Invalid user data')
-  }
-})
-
-const loginUser = asyncHandler(async (req: Request, res: Response) => {
-  const { email, password } = req.body
-  
-  //check for user email
-  const user = await User.findOne({ email })
-
-  if (user && (await bcrypt.compare(password, user.password))) {
-    res.json({
-      _id: user.id,
-      username: user.username,
-      email: user.email,
-      token: generateToken(user._id)
-    })
-  } else {
-    res.status(400)
-    throw new Error('Invalid credentials')
-  }
-})
-
-// generate jwt token
-const generateToken = (id: string) => {
-  return jwt.sign({ id }, process.env.JWT!, { expiresIn: '30d' })
 }
+
+export const getUserByUsername = async (req: Request, res: Response) => {
+  try {
+    const user = await User.find({ username: req.params.username })
+    if (!user) res.status(403).json(`User ${user} not found`)
+
+    return res.status(200).json(user)
+    
+  } catch (error) {
+    
+  }
+}
+
+export const register = async (req: Request, res: Response) => {
+  try {
+    let user = await User.findOne({ email: req.body.email })
+    if (user) return res.status(400).send('User already registered.')
+
+    const salt = await bcrypt.genSalt(10)
+    user = new User({
+      username: req.body.username,
+      email: req.body.email,
+      password: await bcrypt.hash(req.body.password, salt),
+    })
+
+    await user.save()
+
+    const token = user.generateAuthToken()
+    // const token = jwt.sign({ _id: user._id, name: user.name }, process.env.JWT);
+      return res
+      .header('x-auth-token', token)
+      .header('access-control-expose-headers', 'x-auth-token')
+      .send({ _id: user._id, username: user.username, email: user.email });
+  } catch (error) {
+    throw new Error('trouble making a new user')
+  }
+}
+
+
+
+
+// const userExists = await User.findOne({ email: req.body.email })
+// if (userExists) return res.status(400).json(`Account with email ${req.body.email} already exists`)
+
+// const salt = await bcrypt.genSalt(10)
+// const hashedPassword = await bcrypt.hash(req.body.password, salt)
+
+// const user = await new User({
+//   username: req.body.username,
+//   email: req.body.email,
+//   password: hashedPassword,
+// })
+
+// await user.save()
+// const token = user.generateAuthToken()
+// return res
+// .header('x-auth-token', token)
+// .header('access-control-expose-headers', 'x-auth-token')
+// .send({ _id: user._id, username: user.username, email: user.email });
