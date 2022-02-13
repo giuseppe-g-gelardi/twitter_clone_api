@@ -9,4 +9,5 @@ const router = express_1.default.Router();
 router.get('/', userController_1.getUsers);
 router.get('/:username', userController_1.getUserByUsername);
 router.post('/register', userController_1.register);
+router.post('/login', userController_1.login);
 module.exports = router;
