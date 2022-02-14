@@ -1,10 +1,11 @@
 import express from 'express'
-import { getUserByUsername, getUsers, register, login } from '../controllers/userController'
+import { login, getAllUsers, findByUsername, registerNewUser } from '../controllers/userController'
 const router = express.Router()
 
-router.get('/', getUsers)
-router.get('/:username', getUserByUsername)
-router.post('/register', register)
+router.get('/all', getAllUsers)
+router.get('/:username', findByUsername)
+router.post('/new', registerNewUser)
 router.post('/login', login)
 
 module.exports = router
+// router.post('/register', register)
