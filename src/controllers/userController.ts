@@ -2,6 +2,9 @@ import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import User from '../models/userModel'
 
+// this will return everything but password and updated at
+// const { password, updatedAt, ...other } = user._doc
+
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await User.find()
@@ -18,7 +21,18 @@ export const findByUsername = async (req: Request, res: Response) => {
 
     return res.status(200).json(user)
   } catch (error) {
-    return res.status(500).send(`Internal server error, ${error}`)
+    return res.status(500).json(`Internal server error, ${error}`)
+  }
+}
+
+export const findUserById = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.params.userid)
+    if (!user) return res.status(404).json(`User id: ${req.params.userid} not found`)
+    
+    return res.status(200).json(user)
+  } catch (error) {
+    return res.status(500).json(`Internal server error, ${error}`)
   }
 }
 
@@ -47,6 +61,18 @@ export const registerNewUser = async (req: Request, res: Response) => {
 export async function login(req: Request, res: Response) {
   return res.json('login function')
 }
+
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findByIdAndRemove(req.params.userid)
+    if (!user) return res.status(404).json(`User with id: ${req.params.userid} not found`)
+
+    return res.status(200).json(`Deleted user: ${user.username}`)
+  } catch (error) {
+    return res.status(500).json(`Internal server error, ${error}`)
+  }
+}
+
 
 // router.post("/login", async (req, res) => {
 //   // find the user

@@ -12,9 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.registerNewUser = exports.findByUsername = exports.getAllUsers = void 0;
+exports.deleteUser = exports.login = exports.registerNewUser = exports.findUserById = exports.findByUsername = exports.getAllUsers = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
+// this will return everything but password and updated at
+// const { password, updatedAt, ...other } = user._doc
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const users = yield userModel_1.default.find();
@@ -33,10 +35,22 @@ const findByUsername = (req, res) => __awaiter(void 0, void 0, void 0, function*
         return res.status(200).json(user);
     }
     catch (error) {
-        return res.status(500).send(`Internal server error, ${error}`);
+        return res.status(500).json(`Internal server error, ${error}`);
     }
 });
 exports.findByUsername = findByUsername;
+const findUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield userModel_1.default.findById(req.params.userid);
+        if (!user)
+            return res.status(404).json(`User id: ${req.params.userid} not found`);
+        return res.status(200).json(user);
+    }
+    catch (error) {
+        return res.status(500).json(`Internal server error, ${error}`);
+    }
+});
+exports.findUserById = findUserById;
 const registerNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userExists = yield userModel_1.default.findOne({ email: req.body.email });
@@ -66,6 +80,18 @@ function login(req, res) {
     });
 }
 exports.login = login;
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield userModel_1.default.findByIdAndRemove(req.params.userid);
+        if (!user)
+            return res.status(404).json(`User with id: ${req.params.userid} not found`);
+        return res.status(200).json(`Deleted user: ${user.username}`);
+    }
+    catch (error) {
+        return res.status(500).json(`Internal server error, ${error}`);
+    }
+});
+exports.deleteUser = deleteUser;
 // router.post("/login", async (req, res) => {
 //   // find the user
 //     let user = await User.findOne({ email: req.body.email });
