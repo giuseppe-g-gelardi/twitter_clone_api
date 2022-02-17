@@ -1,5 +1,7 @@
 import mongoose, { Schema } from 'mongoose'
 import jwt from 'jsonwebtoken'
+import { Posts } from './postModel'
+import { Notifications } from './notificationsModel'
 
 export const userSchema: Schema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -19,11 +21,36 @@ export const userSchema: Schema = new mongoose.Schema({
   posts: [{ type: mongoose.Types.ObjectId, ref: 'Post', default: [] }],
   notifications: { type: Array, default: [] },
   theme: { type: String, default: 'light'},
-  createdAt: { type: String }
+  createdAt: { type: String },
+  updatedAt: { type: String }
 }, { timestamps: true })
 
 userSchema.methods.generateAuthToken = function(): string {
   return jwt.sign({ _id: this._id, username: this.username, email: this.email}, process.env.JWT!)
+}
+
+export type Users = {
+  _id: string
+  username: string
+  email: string
+  password: string
+  firstname: string
+  lastname: string
+  bio: string
+  location: string
+  profilePicture: string
+  profileBanner: string
+  protected: boolean
+  followers: Users[]
+  following: Users[]
+  isAdmin: boolean
+  isVerified: boolean
+  posts: Posts[]
+  notifications: Notifications[]
+  theme: string // could be boolean actually
+  createdAt: string
+  updatedAt: string
+  generateAuthToken: Function
 }
 
 const User = mongoose.model("User", userSchema)

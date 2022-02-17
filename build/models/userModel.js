@@ -24,7 +24,8 @@ exports.userSchema = new mongoose_1.default.Schema({
     posts: [{ type: mongoose_1.default.Types.ObjectId, ref: 'Post', default: [] }],
     notifications: { type: Array, default: [] },
     theme: { type: String, default: 'light' },
-    createdAt: { type: String }
+    createdAt: { type: String },
+    updatedAt: { type: String }
 }, { timestamps: true });
 exports.userSchema.methods.generateAuthToken = function () {
     return jsonwebtoken_1.default.sign({ _id: this._id, username: this.username, email: this.email }, process.env.JWT);

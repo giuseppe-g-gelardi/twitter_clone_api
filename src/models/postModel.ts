@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
+import { Users } from './userModel'
 
 export const postSchema: Schema = new mongoose.Schema({
   user: { type: mongoose.Types.ObjectId, ref: 'User' },
@@ -8,6 +9,15 @@ export const postSchema: Schema = new mongoose.Schema({
   parent: { type: mongoose.Types.ObjectId, defualt: null },
   replies: [{ type: mongoose.Types.ObjectId, ref: 'Reply', default: [] }],
 }, { timestamps: true })
+
+export type Posts = {
+  user: Users
+  username: string
+  body: string
+  likes: Users[]
+  parent: Posts
+  replies: Posts[]
+}
 
 const Post = mongoose.model("Post", postSchema)
 export default Post

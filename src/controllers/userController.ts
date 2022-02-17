@@ -1,13 +1,14 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
-import User from '../models/userModel'
+import User, { Users } from '../models/userModel'
+
 
 // this will return everything but password and updated at
 // const { password, updatedAt, ...other } = user._doc
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find()
+    const users: Users[] = await User.find()
     return res.json(users)
   } catch (error: any) {
     return res.status(500).json([error.message, 'Internal server error.'])
@@ -16,7 +17,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const findByUsername = async (req: Request, res: Response) => {
   try {
-    const user = await User.findOne({ username: req.params.username })
+    const user: Users | null = await User.findOne({ username: req.params.username })
     if (!user) return res.status(404).json(`User: ${user} not found`)
 
     return res.status(200).json(user)
@@ -27,7 +28,7 @@ export const findByUsername = async (req: Request, res: Response) => {
 
 export const findUserById = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.params.userid)
+    const user: Users | null = await User.findById(req.params.userid)
     if (!user) return res.status(404).json(`User id: ${req.params.userid} not found`)
     
     return res.status(200).json(user)
@@ -38,21 +39,21 @@ export const findUserById = async (req: Request, res: Response) => {
 
 export const registerNewUser = async (req: Request, res: Response) => {
   try {
-    const userExists = await User.findOne({ email: req.body.email })
+    const userExists: Users | null = await User.findOne({ email: req.body.email })
     if (userExists) return res.status(404).json('User already registered')
 
-    const salt = await bcrypt.genSalt(10)
-    const user = await User.create({
+    const salt: string = await bcrypt.genSalt(10)
+    const user: Users = await User.create({
       username: req.body.username,
       email: req.body.email,
       password: await bcrypt.hash(req.body.password, salt),
     })
 
-    const token = await user.generateAuthToken(user._id)
+    const token: string = await user.generateAuthToken(user._id)
     if (user) return res
-    .header('x-auth-token', token)
-    .header('access-control-expose-headers', 'x-auth-token')
-    .json({ _id: user._id, username: user.username, email: user.email });
+      .header('x-auth-token', token)
+      .header('access-control-expose-headers', 'x-auth-token')
+      .json({ _id: user._id, username: user.username, email: user.email });
   } catch (error) {
     return res.status(500).json([error, 'something'])
   }
@@ -60,7 +61,7 @@ export const registerNewUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const user = await User.findByIdAndRemove(req.params.userid)
+    const user: Users | null = await User.findByIdAndRemove(req.params.userid)
     if (!user) return res.status(404).json(`User with id: ${req.params.userid} not found`)
 
     return res.status(200).json(`Deleted user: ${user.username}`)
@@ -71,76 +72,19 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    let user = await User.findOne({ email: req.body.email })
+    let user: Users | null = await User.findOne({ email: req.body.email })
     if (!user) return res.status(400).json("Invalid email or password.");
   
-    const validPassword = await bcrypt.compare(
+    const validPassword: boolean = await bcrypt.compare(
       req.body.password,
       user.password
     );
     if (!validPassword)return res.status(400).json("Invalid email or password.");
   
-    const token = user.generateAuthToken()
+    const token: string = user.generateAuthToken()
     return res.send(token);
     // return res.send({ token, user });
   } catch (error) {
     return res.status(500).json({ message: 'internal server error, i think...'})
   }
 }
-
-
-
-
-// router.post("/login", async (req, res) => {
-//   // find the user
-//     let user = await User.findOne({ email: req.body.email });
-//     if (!user) return res.status(400).send("Invalid email or password.");
-//     // once found, validate the password
-//     const validPassword = await bcrypt.compare(req.body.password, user.password)
-//     // if password is invalid, return a 400 response
-//     if (!validPassword)return res.status(400).send("Invalid email or password.")
-
-//     // generate the token and return it
-//     const token = user.generateAuthToken()
-//     return res.send(token);
-
-// });
-
-// export async function getUserByUsername(req: Request, res: Response) {
-//   User.findOne({ username: req.params.username })
-//     .then(user => {
-//       if (!user) return res.status(404).json('user not found')
-//       return res.json(user)
-//     })
-//     .catch(error => res.status(500).json(error))
-// }
-// export async function getUsers(req: Request, res: Response) {
-//   return User.find()
-//     .then(user => {
-//       if (!user) return res.status(404).json('Users not found')
-//       return res.json(user)
-//     })
-//     .catch(error => res.status(500).json(error))
-// }
-// export async function register(req: Request, res: Response) {
-//   User.findOne({ email: req.body.email })
-//     .then(async user => {
-//       if (user) return res.status(400).json('User already exists')
-
-//       const salt = await bcrypt.genSalt(10)
-//       user = new User({
-//         username: req.body.username,
-//         email: req.body.email,
-//         password: await bcrypt.hash(req.body.password, salt),
-//       })
-//       await user.save()
-
-//       const token = user.generateAuthToken(user._id)
-
-//       return res
-//       .header('x-auth-token', token)
-//       .header('access-control-expose-headers', 'x-auth-token')
-//       .json({ _id: user._id, username: user.username, email: user.email });
-//     })
-//     .catch(error => res.status(500).json(error))
-// }
