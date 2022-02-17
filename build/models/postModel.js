@@ -9,6 +9,9 @@ exports.postSchema = new mongoose_1.default.Schema({
     user: { type: mongoose_1.default.Types.ObjectId, ref: 'User' },
     username: { type: String, default: null },
     body: { type: String, maxlength: 500, required: true },
+    likes: { type: [mongoose_1.default.Types.ObjectId], default: [] },
+    parent: { type: mongoose_1.default.Types.ObjectId, defualt: null },
+    replies: [{ type: mongoose_1.default.Types.ObjectId, ref: 'Reply', default: [] }],
 }, { timestamps: true });
 const Post = mongoose_1.default.model("Post", exports.postSchema);
 exports.default = Post;
