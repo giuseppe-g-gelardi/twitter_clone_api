@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.login = exports.registerNewUser = exports.findUserById = exports.findByUsername = exports.getAllUsers = void 0;
+exports.login = exports.deleteUser = exports.registerNewUser = exports.findUserById = exports.findByUsername = exports.getAllUsers = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 // this will return everything but password and updated at
@@ -74,12 +74,6 @@ const registerNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.registerNewUser = registerNewUser;
-function login(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return res.json('login function');
-    });
-}
-exports.login = login;
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield userModel_1.default.findByIdAndRemove(req.params.userid);
@@ -92,6 +86,23 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteUser = deleteUser;
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let user = yield userModel_1.default.findOne({ email: req.body.email });
+        if (!user)
+            return res.status(400).json("Invalid email or password.");
+        const validPassword = yield bcryptjs_1.default.compare(req.body.password, user.password);
+        if (!validPassword)
+            return res.status(400).json("Invalid email or password.");
+        const token = user.generateAuthToken();
+        return res.send(token);
+        // return res.send({ token, user });
+    }
+    catch (error) {
+        return res.status(500).json({ message: 'internal server error, i think...' });
+    }
+});
+exports.login = login;
 // router.post("/login", async (req, res) => {
 //   // find the user
 //     let user = await User.findOne({ email: req.body.email });

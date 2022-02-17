@@ -22,7 +22,7 @@ export const userSchema: Schema = new mongoose.Schema({
   createdAt: { type: String }
 }, { timestamps: true })
 
-userSchema.methods.generateAuthToken = function() {
+userSchema.methods.generateAuthToken = function(): string {
   return jwt.sign({ _id: this._id, username: this.username, email: this.email}, process.env.JWT!)
 }
 

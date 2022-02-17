@@ -58,10 +58,6 @@ export const registerNewUser = async (req: Request, res: Response) => {
   }
 }
 
-export async function login(req: Request, res: Response) {
-  return res.json('login function')
-}
-
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const user = await User.findByIdAndRemove(req.params.userid)
@@ -72,6 +68,27 @@ export const deleteUser = async (req: Request, res: Response) => {
     return res.status(500).json(`Internal server error, ${error}`)
   }
 }
+
+export const login = async (req: Request, res: Response) => {
+  try {
+    let user = await User.findOne({ email: req.body.email })
+    if (!user) return res.status(400).json("Invalid email or password.");
+  
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+    if (!validPassword)return res.status(400).json("Invalid email or password.");
+  
+    const token = user.generateAuthToken()
+    return res.send(token);
+    // return res.send({ token, user });
+  } catch (error) {
+    return res.status(500).json({ message: 'internal server error, i think...'})
+  }
+}
+
+
 
 
 // router.post("/login", async (req, res) => {
