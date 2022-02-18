@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePost = exports.newPost = exports.getUserPosts = exports.getSinglePost = exports.getAllPosts = void 0;
+exports.likeUnlike = exports.deletePost = exports.newPost = exports.getUserPosts = exports.getSinglePost = exports.getAllPosts = void 0;
 const postModel_1 = __importDefault(require("../models/postModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -85,3 +85,25 @@ const deletePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deletePost = deletePost;
+const likeUnlike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let post = yield postModel_1.default.findById(req.params.postid);
+        if (!post)
+            return res.status(404).json(`Post with id: ${req.params.postid} does not exist`);
+        let message;
+        if (post.likes.includes(req.body.userid)) {
+            post.likes.pull(req.body.userid);
+            message = 'disliked';
+        }
+        else {
+            post.likes.push(req.body.userid);
+            message = 'liked';
+        }
+        yield post.save();
+        return res.status(200).json({ post, message });
+    }
+    catch (error) {
+        res.status(500).send(`Internal server error --Unable to like/unlike post. ${error}`);
+    }
+});
+exports.likeUnlike = likeUnlike;

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import Post, { Posts, postSchema } from '../models/postModel'
+import Post, { Posts } from '../models/postModel'
 import User, { Users } from '../models/userModel'
 
 export const getAllPosts = async (req: Request, res: Response) => {
@@ -15,7 +15,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
 
 export const getSinglePost = async (req: Request, res: Response) => {
   try {
-    const post = await Post.findOne({ _id: req.params.postid})
+    const post: Posts | null = await Post.findOne({ _id: req.params.postid})
     if (!post) return res.status(500).json(`Post ${req.params.postid} not found`)
 
     return res.status(200).json(post)
@@ -70,4 +70,26 @@ export const deletePost = async (req: Request, res: Response) => {
     return res.status(500).send(`unable to delete post ${error}`)
   }
 }
+
+export const likeUnlike = async (req: Request, res: Response) => {
+  try {
+    let post = await Post.findById(req.params.postid)
+    if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
+
+    let message;
+    if (post.likes.includes(req.body.userid)) {
+      post.likes.pull(req.body.userid)
+      message = 'disliked'
+    } else {
+      post.likes.push(req.body.userid)
+      message = 'liked'
+    }
+    await post.save()
+    return res.status(200).json({ post, message })
+  } catch (error) {
+    res.status(500).send(`Internal server error --Unable to like/unlike post. ${error}`)
+    
+  }
+}
+
 
