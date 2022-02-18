@@ -60,3 +60,14 @@ export const newPost = async (req: Request, res: Response) =>{
   }
 }
 
+export const deletePost = async (req: Request, res: Response) => {
+  try {
+    const post = await Post.findByIdAndRemove(req.params.postid)
+    if (!post) return res.status(404).json(`Unable to find post: ${req.params.postid}`)
+
+    return res.status(200).json(`Post ${post} successfully deleted`)
+  } catch (error) {
+    return res.status(500).send(`unable to delete post ${error}`)
+  }
+}
+

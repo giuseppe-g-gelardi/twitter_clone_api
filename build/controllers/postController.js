@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.newPost = exports.getUserPosts = exports.getSinglePost = exports.getAllPosts = void 0;
+exports.deletePost = exports.newPost = exports.getUserPosts = exports.getSinglePost = exports.getAllPosts = void 0;
 const postModel_1 = __importDefault(require("../models/postModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -73,3 +73,15 @@ const newPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.newPost = newPost;
+const deletePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const post = yield postModel_1.default.findByIdAndRemove(req.params.postid);
+        if (!post)
+            return res.status(404).json(`Unable to find post: ${req.params.postid}`);
+        return res.status(200).json(`Post ${post} successfully deleted`);
+    }
+    catch (error) {
+        return res.status(500).send(`unable to delete post ${error}`);
+    }
+});
+exports.deletePost = deletePost;

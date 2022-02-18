@@ -10,4 +10,5 @@ router.get('/all', postController_1.getAllPosts);
 router.get('/:postid', postController_1.getSinglePost);
 router.put('/:username', postController_1.newPost);
 router.get('/:username/posts', postController_1.getUserPosts);
+router.delete('/:postid', postController_1.deletePost);
 module.exports = router;
