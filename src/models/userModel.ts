@@ -29,7 +29,7 @@ userSchema.methods.generateAuthToken = function(): string {
   return jwt.sign({ _id: this._id, username: this.username, email: this.email}, process.env.JWT!)
 }
 
-export type Users = {
+export interface Users {
   _id: string
   username: string
   email: string

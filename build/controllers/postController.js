@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likeUnlike = exports.deletePost = exports.newPost = exports.getUserPosts = exports.getSinglePost = exports.getAllPosts = void 0;
+exports.getPostLikes = exports.likeUnlike = exports.deletePost = exports.newPost = exports.getUserPosts = exports.getSinglePost = exports.getAllPosts = void 0;
 const postModel_1 = __importDefault(require("../models/postModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -107,3 +107,18 @@ const likeUnlike = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.likeUnlike = likeUnlike;
+const getPostLikes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const post = yield postModel_1.default.findOne({ _id: req.params.postid });
+        if (!post)
+            return res.status(404).json(`Post with id: ${req.params.postid} not found`);
+        let likes = post.likes;
+        if (!likes)
+            return res.json(`Post ${post} has no likes`);
+        return res.status(200).json(likes);
+    }
+    catch (error) {
+        return res.status(500).json(`unable to find likes... ${error}`);
+    }
+});
+exports.getPostLikes = getPostLikes;

@@ -92,4 +92,16 @@ export const likeUnlike = async (req: Request, res: Response) => {
   }
 }
 
+export const getPostLikes = async (req: Request, res: Response) => {
+  try {
+    const post = await Post.findOne({ _id: req.params.postid })
+    if (!post) return res.status(404).json(`Post with id: ${req.params.postid} not found`)
 
+    let likes = post.likes
+    if (!likes) return res.json(`Post ${post} has no likes`)
+
+    return res.status(200).json(likes)
+  } catch (error) {
+    return res.status(500).json(`unable to find likes... ${error}`)
+  }
+}

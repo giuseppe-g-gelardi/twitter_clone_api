@@ -12,4 +12,5 @@ router.put('/:username', postController_1.newPost);
 router.get('/:username/posts', postController_1.getUserPosts);
 router.delete('/:postid', postController_1.deletePost);
 router.put('/:postid/likes', postController_1.likeUnlike);
+router.get('/:postid/likes', postController_1.getPostLikes);
 module.exports = router;
