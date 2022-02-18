@@ -6,7 +6,7 @@ import {
   getUserPosts, 
   deletePost, 
   likeUnlike, 
-  getPostLikes
+  getPostLikes,
 } from '../controllers/postController'
 const router = express.Router()
 

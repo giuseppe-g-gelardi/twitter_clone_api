@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
+import { Comments } from './commentModel'
 import { Users } from './userModel'
 
 export const postSchema: Schema = new mongoose.Schema({
@@ -6,17 +7,15 @@ export const postSchema: Schema = new mongoose.Schema({
   username: { type: String, default: null },
   body: { type: String, maxlength: 500, required: true },
   likes: { type: [ mongoose.Types.ObjectId ], default: [] },
-  parent: { type: mongoose.Types.ObjectId, defualt: null },
-  replies: [{ type: mongoose.Types.ObjectId, ref: 'Reply', default: [] }],
+  comments: [{ type: mongoose.Types.ObjectId, ref: 'Comment', default: [] }],
 }, { timestamps: true })
 
-export type Posts = {
+export interface Posts {
   user: Users
   username: string
   body: string
-  likes: Users[]
-  parent: Posts
-  replies: Posts[]
+  likes?: Users[]
+  comments?: Comments[]
 }
 
 const Post = mongoose.model("Post", postSchema)
