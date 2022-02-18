@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const postController_1 = require("../controllers/postController");
 const router = express_1.default.Router();
 router.get('/all', postController_1.getAllPosts);
-// router.post('/new', newPost)
+router.get('/:postid', postController_1.getSinglePost);
 router.put('/:username', postController_1.newPost);
+router.get('/:username/posts', postController_1.getUserPosts);
 module.exports = router;

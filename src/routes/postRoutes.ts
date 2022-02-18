@@ -1,9 +1,10 @@
 import express from 'express'
-import { newPost, getAllPosts } from '../controllers/postController'
+import { newPost, getAllPosts, getSinglePost, getUserPosts } from '../controllers/postController'
 const router = express.Router()
 
 router.get('/all', getAllPosts)
-// router.post('/new', newPost)
+router.get('/:postid', getSinglePost)
 router.put('/:username', newPost)
+router.get('/:username/posts', getUserPosts)
 
 module.exports = router
