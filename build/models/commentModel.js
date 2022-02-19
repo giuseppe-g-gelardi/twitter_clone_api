@@ -11,7 +11,7 @@ exports.commentSchema = new mongoose_1.default.Schema({
     body: { type: String, maxlength: 500, required: true },
     likes: { type: [mongoose_1.default.Types.ObjectId], default: [] },
     parent: { type: mongoose_1.default.Types.ObjectId, default: null },
-    replies: { type: mongoose_1.default.Types.ObjectId, ref: 'Comment', default: [] }
+    replies: { type: [mongoose_1.default.Types.ObjectId], ref: 'Comment', default: [] }
 });
 const Comment = mongoose_1.default.model("Comment", exports.commentSchema);
 exports.default = Comment;

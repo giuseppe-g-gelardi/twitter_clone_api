@@ -10,7 +10,7 @@ exports.postSchema = new mongoose_1.default.Schema({
     username: { type: String, default: null },
     body: { type: String, maxlength: 500, required: true },
     likes: { type: [mongoose_1.default.Types.ObjectId], default: [] },
-    comments: [{ type: mongoose_1.default.Types.ObjectId, ref: 'Comment', default: [] }],
+    comments: [{ type: [mongoose_1.default.Types.ObjectId], ref: 'Comment', default: [] }],
 }, { timestamps: true });
 const Post = mongoose_1.default.model("Post", exports.postSchema);
 exports.default = Post;

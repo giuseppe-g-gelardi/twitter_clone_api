@@ -7,7 +7,7 @@ export const postSchema: Schema = new mongoose.Schema({
   username: { type: String, default: null },
   body: { type: String, maxlength: 500, required: true },
   likes: { type: [ mongoose.Types.ObjectId ], default: [] },
-  comments: [{ type: mongoose.Types.ObjectId, ref: 'Comment', default: [] }],
+  comments: [{ type: [ mongoose.Types.ObjectId ], ref: 'Comment', default: [] }],
 }, { timestamps: true })
 
 export interface Posts {
