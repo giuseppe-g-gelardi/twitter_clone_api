@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { request, Request, Response } from 'express'
 import Comment, { Comments } from '../models/commentModel'
 import Post from '../models/postModel'
 import User from '../models/userModel'
@@ -39,7 +39,6 @@ export const postNewComment = async (req: Request, res: Response) => {
 }
 
 export const likeUnlikeComment = async (req: Request, res: Response) => {
-  // return res.json('like/unlike comment')
   try {
     const user = await User.find({ username: req.params.username })
     if (!user) return res.status(404).json(`User ${req.params.username} does not exist`)
@@ -103,6 +102,14 @@ export const getSingleComment = async (req: Request, res: Response) => {
     if (!comment) return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`)
 
     return res.status(200).json(comment)
+  } catch (error) {
+    return res.status(500).json(`Internal server error: ${error}`)
+  }
+}
+
+export const reply = async (req: Request, res: Response) => {
+  try {
+    return res.status(200).json('replies')
   } catch (error) {
     return res.status(500).json(`Internal server error: ${error}`)
   }
