@@ -70,6 +70,7 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
 }
 
+// ! update to call go server for jwt authentication
 export const login = async (req: Request, res: Response) => {
   try {
     let user: Users | null = await User.findOne({ email: req.body.email })

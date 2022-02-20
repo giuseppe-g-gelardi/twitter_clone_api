@@ -86,6 +86,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteUser = deleteUser;
+// ! update to call go server for jwt authentication
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let user = yield userModel_1.default.findOne({ email: req.body.email });

@@ -151,6 +151,33 @@ const reply = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.reply = reply;
 const getAllReplies = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.json('get all replies');
+    try {
+        const user = yield userModel_1.default.find({ username: req.params.username });
+        if (!user)
+            return res.status(404).json(`User ${req.params.username} does not exist`);
+        let post = yield postModel_1.default.findById(req.params.postid);
+        if (!post)
+            return res.status(404).json(`Post with id: ${req.params.postid} does not exist`);
+        let comment = yield commentModel_1.default.findById(req.params.commentid);
+        if (!comment)
+            return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`);
+        // ! implement to populate reply details
+        // const posts = await Post.find().populate({
+        //   path: 'user',
+        //   select: 'username isVerified profilePicture',
+        // })
+        const replies = comment.replies;
+        return res.status(200).json({
+            parentComment: {
+                id: comment._id,
+                body: comment.body,
+                userid: comment.user,
+                username: comment.username
+            }, replies
+        });
+    }
+    catch (error) {
+        return res.status(500).json(`Internal server error: ${error}`);
+    }
 });
 exports.getAllReplies = getAllReplies;
