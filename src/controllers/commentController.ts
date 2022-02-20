@@ -1,7 +1,7 @@
 import { request, Request, Response } from 'express'
 import Comment, { Comments } from '../models/commentModel'
 import Post from '../models/postModel'
-import User from '../models/userModel'
+import User, { Users } from '../models/userModel'
 
 export const getAllComments = async (req: Request, res: Response) => {
   try {
@@ -109,7 +109,29 @@ export const getSingleComment = async (req: Request, res: Response) => {
 
 export const reply = async (req: Request, res: Response) => {
   try {
-    return res.status(200).json('replies')
+    const user = await User.findOne({ username: req.params.username })
+    if (!user) return res.status(404).json(`User ${req.params.username} does not exist`)
+
+    let post = await Post.findById(req.params.postid)
+    if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
+
+    let parentComment = await Comment.findById(req.params.commentid)
+    if (!parentComment) return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`)
+
+    let replies = parentComment.replies
+
+    let newReply = new Comment({
+      body: req.body.body,
+      user: user._id,
+      username: user.username,
+      parent: req.params.commentid
+    })
+    await newReply.save()
+
+    replies.push(newReply._id)
+    await parentComment.save()
+
+    return res.json({parentComment, newReply})
   } catch (error) {
     return res.status(500).json(`Internal server error: ${error}`)
   }

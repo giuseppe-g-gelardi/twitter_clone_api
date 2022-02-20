@@ -30,27 +30,27 @@ userSchema.methods.generateAuthToken = function(): string {
 }
 
 export interface Users {
-  _id: string
+  _id?: string
   username: string
-  email: string
-  password: string
-  firstname: string
-  lastname: string
-  bio: string
-  location: string
-  profilePicture: string
-  profileBanner: string
-  protected: boolean
-  followers: Users[]
-  following: Users[]
-  isAdmin: boolean
-  isVerified: boolean
-  posts: Posts[]
-  notifications: Notifications[]
-  theme: string // could be boolean actually
-  createdAt: string
-  updatedAt: string
-  generateAuthToken: Function
+  email?: string
+  password?: string
+  firstname?: string
+  lastname?: string
+  bio?: string
+  location?: string
+  profilePicture?: string
+  profileBanner?: string
+  protected?: boolean
+  followers?: Users[]
+  following?: Users[]
+  isAdmin?: boolean
+  isVerified?: boolean
+  posts?: Posts[]
+  notifications?: Notifications[]
+  theme?: string // could be boolean actually
+  createdAt?: string
+  updatedAt?: string
+  generateAuthToken?: Function
 }
 
 const User = mongoose.model("User", userSchema)

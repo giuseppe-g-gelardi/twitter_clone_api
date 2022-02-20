@@ -124,7 +124,26 @@ const getSingleComment = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.getSingleComment = getSingleComment;
 const reply = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return res.status(200).json('replies');
+        const user = yield userModel_1.default.findOne({ username: req.params.username });
+        if (!user)
+            return res.status(404).json(`User ${req.params.username} does not exist`);
+        let post = yield postModel_1.default.findById(req.params.postid);
+        if (!post)
+            return res.status(404).json(`Post with id: ${req.params.postid} does not exist`);
+        let parentComment = yield commentModel_1.default.findById(req.params.commentid);
+        if (!parentComment)
+            return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`);
+        let replies = parentComment.replies;
+        let newReply = new commentModel_1.default({
+            body: req.body.body,
+            user: user._id,
+            username: user.username,
+            parent: req.params.commentid
+        });
+        yield newReply.save();
+        replies.push(newReply._id);
+        yield parentComment.save();
+        return res.json({ parentComment, newReply });
     }
     catch (error) {
         return res.status(500).json(`Internal server error: ${error}`);
