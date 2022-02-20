@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.get('/:username/:postid/all', getAllComments)
 router.post('/:username/:postid/new', postNewComment)
-router.get('/:username/:postid/comments/:commentid/likes', likeUnlikeComment)
+router.put('/:username/:postid/comments/:commentid/likes', likeUnlikeComment)
 
 module.exports = router
 

@@ -52,12 +52,32 @@ const postNewComment = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.postNewComment = postNewComment;
 const likeUnlikeComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.json('like/unlike comment');
-    // try {
-    //   let post = await Post.findById(req.params.postid)
-    //   if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
-    // } catch (error) {
-    // }
+    // return res.json('like/unlike comment')
+    try {
+        const user = yield userModel_1.default.find({ username: req.params.username });
+        if (!user)
+            return res.status(404).json(`User ${req.params.userid} does not exist`);
+        let post = yield postModel_1.default.findById(req.params.postid);
+        if (!post)
+            return res.status(404).json(`Post with id: ${req.params.postid} does not exist`);
+        let comment = yield commentModel_1.default.findById(req.params.commentid);
+        if (!comment)
+            return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`);
+        let message;
+        if (comment.likes.includes(req.body.userid)) {
+            comment.likes.pull(req.body.userid);
+            message = 'disliked';
+        }
+        else {
+            comment.likes.push(req.body.userid);
+            message = 'liked';
+        }
+        yield comment.save();
+        return res.status(200).json({ comment, message });
+    }
+    catch (error) {
+        return res.status(500).json(`Internal server error: ${error}`);
+    }
 });
 exports.likeUnlikeComment = likeUnlikeComment;
 // http://localhost:8000/api/comments/seppe/620f39593bd2f802685b1595/comments/:commentid/likes

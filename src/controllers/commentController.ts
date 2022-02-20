@@ -39,18 +39,32 @@ export const postNewComment = async (req: Request, res: Response) => {
 }
 
 export const likeUnlikeComment = async (req: Request, res: Response) => {
-  return res.json('like/unlike comment')
-  // try {
-    
+  // return res.json('like/unlike comment')
+  try {
+    const user = await User.find({ username: req.params.username })
+    if (!user) return res.status(404).json(`User ${req.params.userid} does not exist`)
 
-  //   let post = await Post.findById(req.params.postid)
-  //   if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
+    let post = await Post.findById(req.params.postid)
+    if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
 
+    let comment = await Comment.findById(req.params.commentid)
+    if (!comment) return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`)
 
+    let message: string;
+    if (comment.likes.includes(req.body.userid)) {
+      comment.likes.pull(req.body.userid)
+      message = 'disliked'
+    } else {
+      comment.likes.push(req.body.userid)
+      message = 'liked'
+    }
 
-  // } catch (error) {
-    
-  // }
+    await comment.save()
+    return res.status(200).json({ comment, message })
+
+  } catch (error) {
+    return res.status(500).json(`Internal server error: ${error}`)
+  }
 }
 // http://localhost:8000/api/comments/seppe/620f39593bd2f802685b1595/comments/:commentid/likes
 
