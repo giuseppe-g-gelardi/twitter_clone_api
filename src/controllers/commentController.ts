@@ -136,3 +136,7 @@ export const reply = async (req: Request, res: Response) => {
     return res.status(500).json(`Internal server error: ${error}`)
   }
 }
+
+export const getAllReplies = async (req: Request, res: Response) => {
+  return res.json('get all replies')
+}

@@ -11,6 +11,6 @@ router.post('/:username/:postid/new', commentController_1.postNewComment);
 router.put('/:username/:postid/comments/:commentid/likes', commentController_1.likeUnlikeComment);
 router.get('/:username/:postid/comments/:commentid/likes', commentController_1.getCommentLikes);
 router.get('/:username/:postid/comments/:commentid', commentController_1.getSingleComment);
-router.get('/:username/:postid/comments/:commentid/replies', commentController_1.reply);
+router.post('/:username/:postid/comments/:commentid/replies', commentController_1.reply);
+router.get('/:username/:postid/comments/:commentid/replies', commentController_1.getAllReplies);
 module.exports = router;
-// /:username/:postid/comments/:commentid/likes

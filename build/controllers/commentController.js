@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reply = exports.getSingleComment = exports.getCommentLikes = exports.likeUnlikeComment = exports.postNewComment = exports.getAllComments = void 0;
+exports.getAllReplies = exports.reply = exports.getSingleComment = exports.getCommentLikes = exports.likeUnlikeComment = exports.postNewComment = exports.getAllComments = void 0;
 const commentModel_1 = __importDefault(require("../models/commentModel"));
 const postModel_1 = __importDefault(require("../models/postModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
@@ -150,3 +150,7 @@ const reply = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.reply = reply;
+const getAllReplies = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.json('get all replies');
+});
+exports.getAllReplies = getAllReplies;
