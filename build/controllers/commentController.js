@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postNewComment = exports.getAllComments = void 0;
+exports.likeUnlikeComment = exports.postNewComment = exports.getAllComments = void 0;
 const commentModel_1 = __importDefault(require("../models/commentModel"));
 const postModel_1 = __importDefault(require("../models/postModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
@@ -51,3 +51,42 @@ const postNewComment = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.postNewComment = postNewComment;
+const likeUnlikeComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.json('like/unlike comment');
+    // try {
+    //   let post = await Post.findById(req.params.postid)
+    //   if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
+    // } catch (error) {
+    // }
+});
+exports.likeUnlikeComment = likeUnlikeComment;
+// http://localhost:8000/api/comments/seppe/620f39593bd2f802685b1595/comments/:commentid/likes
+// export const likeUnlike = async (req: Request, res: Response) => {
+//   try {
+//     let post = await Post.findById(req.params.postid)
+//     if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
+//     let message;
+//     if (post.likes.includes(req.body.userid)) {
+//       post.likes.pull(req.body.userid)
+//       message = 'disliked'
+//     } else {
+//       post.likes.push(req.body.userid)
+//       message = 'liked'
+//     }
+//     await post.save()
+//     return res.status(200).json({ post, message })
+//   } catch (error) {
+//     res.status(500).send(`Internal server error --Unable to like/unlike post. ${error}`)
+//   }
+// }
+// export const getPostLikes = async (req: Request, res: Response) => {
+//   try {
+//     const post = await Post.findOne({ _id: req.params.postid })
+//     if (!post) return res.status(404).json(`Post with id: ${req.params.postid} not found`)
+//     let likes = post.likes
+//     if (!likes) return res.json(`Post ${post} has no likes`)
+//     return res.status(200).json(likes)
+//   } catch (error) {
+//     return res.status(500).json(`unable to find likes... ${error}`)
+//   }
+// }
