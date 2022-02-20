@@ -19,7 +19,7 @@ func main() {
 
 func server() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello")
+		fmt.Fprintf(w, "Hello... from go ;) ")
 	})
 
 	fmt.Println("JWT Auth server started on port 8080 ")
