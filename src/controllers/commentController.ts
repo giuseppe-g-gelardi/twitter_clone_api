@@ -147,26 +147,28 @@ export const getAllReplies = async (req: Request, res: Response) => {
 
     let comment = await Comment.findById(req.params.commentid)
     if (!comment) return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`)
-
-    // ! implement to populate reply details
-    // const posts = await Post.find().populate({
-    //   path: 'user',
-    //   select: 'username isVerified profilePicture',
-    // })
-
-    const replies = comment.replies
+    
+    const replies = await comment.replies
 
     return res.status(200).json({ 
       parentComment: {
-      id: comment._id,
-      body: comment.body,
-      userid: comment.user,
-      username: comment.username
-    }, replies })
-
-
-
-  } catch (error) {
-    return res.status(500).json(`Internal server error: ${error}`)
+        id: comment._id,
+        body: comment.body,
+        userid: comment.user,
+        username: comment.username
+      }, 
+      replies 
+    })
+      
+      
+    } catch (error) {
+      return res.status(500).json(`Internal server error: ${error}`)
+    }
   }
-}
+  
+  
+  // ! implement to populate reply details
+  // const posts = await Post.find().populate({
+  //   path: 'user',
+  //   select: 'username isVerified profilePicture',
+  // })

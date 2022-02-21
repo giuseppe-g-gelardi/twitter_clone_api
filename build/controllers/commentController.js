@@ -161,19 +161,15 @@ const getAllReplies = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         let comment = yield commentModel_1.default.findById(req.params.commentid);
         if (!comment)
             return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`);
-        // ! implement to populate reply details
-        // const posts = await Post.find().populate({
-        //   path: 'user',
-        //   select: 'username isVerified profilePicture',
-        // })
-        const replies = comment.replies;
+        const replies = yield comment.replies;
         return res.status(200).json({
             parentComment: {
                 id: comment._id,
                 body: comment.body,
                 userid: comment.user,
                 username: comment.username
-            }, replies
+            },
+            replies
         });
     }
     catch (error) {
@@ -181,3 +177,8 @@ const getAllReplies = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.getAllReplies = getAllReplies;
+// ! implement to populate reply details
+// const posts = await Post.find().populate({
+//   path: 'user',
+//   select: 'username isVerified profilePicture',
+// })

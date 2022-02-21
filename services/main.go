@@ -4,13 +4,24 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
-type User struct {
-	Id string `json:"_id"`
-	Username string `json:"username"`
-	Email string `json:"email"`
-	Password string `json:"password"`
+// type User struct {
+// 	Id string `json:"_id"`
+// 	Username string `json:"username"`
+// 	Email string `json:"email"`
+// 	Password string `json:"password"`
+// }
+
+func init() {
+	err := godotenv.Load("../.env")
+	if err != nil { 
+		fmt.Println("Error loading .env")
+	}
+	fmt.Println("JWT Secret Key:", os.Getenv("JWT"))
 }
 
 func main() {

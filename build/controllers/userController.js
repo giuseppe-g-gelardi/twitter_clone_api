@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.deleteUser = exports.registerNewUser = exports.findUserById = exports.findByUsername = exports.getAllUsers = void 0;
+exports.registerNewUser = exports.login = exports.deleteUser = exports.findUserById = exports.findByUsername = exports.getAllUsers = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 // this will return everything but password and updated at
@@ -51,6 +51,35 @@ const findUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.findUserById = findUserById;
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield userModel_1.default.findByIdAndRemove(req.params.userid);
+        if (!user)
+            return res.status(404).json(`User with id: ${req.params.userid} not found`);
+        return res.status(200).json(`Deleted user: ${user.username}`);
+    }
+    catch (error) {
+        return res.status(500).json(`Internal server error, ${error}`);
+    }
+});
+exports.deleteUser = deleteUser;
+// ! update to call go server for jwt authentication
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let user = yield userModel_1.default.findOne({ email: req.body.email });
+        if (!user)
+            return res.status(400).json("Invalid email or password.");
+        const validPassword = yield bcryptjs_1.default.compare(req.body.password, user.password);
+        if (!validPassword)
+            return res.status(400).json("Invalid email or password.");
+        const token = user.generateAuthToken();
+        return res.status(200).send(token);
+    }
+    catch (error) {
+        return res.status(500).json({ message: 'internal server error' });
+    }
+});
+exports.login = login;
 const registerNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userExists = yield userModel_1.default.findOne({ email: req.body.email });
@@ -74,33 +103,3 @@ const registerNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.registerNewUser = registerNewUser;
-const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const user = yield userModel_1.default.findByIdAndRemove(req.params.userid);
-        if (!user)
-            return res.status(404).json(`User with id: ${req.params.userid} not found`);
-        return res.status(200).json(`Deleted user: ${user.username}`);
-    }
-    catch (error) {
-        return res.status(500).json(`Internal server error, ${error}`);
-    }
-});
-exports.deleteUser = deleteUser;
-// ! update to call go server for jwt authentication
-const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let user = yield userModel_1.default.findOne({ email: req.body.email });
-        if (!user)
-            return res.status(400).json("Invalid email or password.");
-        const validPassword = yield bcryptjs_1.default.compare(req.body.password, user.password);
-        if (!validPassword)
-            return res.status(400).json("Invalid email or password.");
-        const token = user.generateAuthToken();
-        return res.send(token);
-        // return res.send({ token, user });
-    }
-    catch (error) {
-        return res.status(500).json({ message: 'internal server error, i think...' });
-    }
-});
-exports.login = login;
