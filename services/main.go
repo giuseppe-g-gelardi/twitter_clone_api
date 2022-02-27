@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -14,13 +15,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
-
-// type User struct {
-// 	Id string `json:"_id"`
-// 	Username string `json:"username"`
-// 	Email string `json:"email"`
-// 	Password string `json:"password"`
-// }
 
 func init() {
 	// * load .env file
@@ -55,8 +49,12 @@ func main() {
 }
 
 func server() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello... from go! :D ")
+	http.HandleFunc("/posttest", func(w http.ResponseWriter, r *http.Request) {
+		bodyBytes, err := ioutil.ReadAll(r.Body)
+		if err != nil { log.Fatal(err) };
+
+		bodyString := string(bodyBytes)
+		fmt.Fprintf(w, string(bodyString), "test test test from go server")
 	})
 
 	fmt.Println("Server started on port", os.Getenv("SERVICE_PORT"))

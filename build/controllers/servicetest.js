@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.test = void 0;
+exports.postTest = exports.test = void 0;
 const axios_1 = __importDefault(require("axios"));
 const test = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -24,3 +24,22 @@ const test = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.test = test;
+const postTest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // const body = {
+        //   "testparam": "this is a test",
+        //   "testparam2": "this is also a test"
+        // }
+        const body = {
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            email: req.body.email
+        };
+        const response = yield axios_1.default.post('http://localhost:8080/posttest', { body });
+        return res.status(200).json(response.data);
+    }
+    catch (error) {
+        return res.status(500).json(error);
+    }
+});
+exports.postTest = postTest;

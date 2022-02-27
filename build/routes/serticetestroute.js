@@ -7,4 +7,5 @@ const express_1 = __importDefault(require("express"));
 const servicetest_1 = require("../controllers/servicetest");
 const router = express_1.default.Router();
 router.get('/', servicetest_1.test);
+router.post('/postTest', servicetest_1.postTest);
 module.exports = router;
