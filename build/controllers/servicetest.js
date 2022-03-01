@@ -26,10 +26,6 @@ const test = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.test = test;
 const postTest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // const body = {
-        //   "testparam": "this is a test",
-        //   "testparam2": "this is also a test"
-        // }
         const body = {
             firstname: req.body.firstname,
             lastname: req.body.lastname,

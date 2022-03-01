@@ -13,11 +13,6 @@ export const test = async (req: Request, res: Response) => {
 
 export const postTest = async (req: Request, res: Response) => {
   try {
-    // const body = {
-    //   "testparam": "this is a test",
-    //   "testparam2": "this is also a test"
-    // }
-
     const body = {
       firstname: req.body.firstname,
       lastname: req.body.lastname,
@@ -25,9 +20,7 @@ export const postTest = async (req: Request, res: Response) => {
     }
 
     const response = await axios.post('http://localhost:8080/posttest', {body})
-    return res.status(200).json(response.data)
-
-    
+    return res.status(200).json(response.data)    
   } catch (error: any) {
     return res.status(500).json(error)
   }
