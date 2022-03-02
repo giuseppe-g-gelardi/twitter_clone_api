@@ -26,12 +26,10 @@ const test = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.test = test;
 const postTest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const body = {
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
+        const response = yield axios_1.default.post('http://localhost:8080/test', {
+            id: req.body.id,
             email: req.body.email
-        };
-        const response = yield axios_1.default.post('http://localhost:8080/posttest', { body });
+        });
         return res.status(200).json(response.data);
     }
     catch (error) {
