@@ -1,73 +1,77 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/joho/godotenv"
 )
 
 type User struct {
-	Id string `json:"id"`
 	Email string `json:"email"`
+	Password string `json:"password"`
+}
+
+type UserLoginRequest struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
+}
+
+type UserRegisterRequest struct {
+	Username string `json:"username"`
+	Email string `json:"email"`
+	Password string `json:"password"`
 }
 
 func main() {
+	// * init fiber app
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-
+	// * load .env file
+	err := godotenv.Load("../.env")
+	if err != nil {fmt.Println("Error loading .env")}
+	fmt.Println(".env successfully loaded")
+	
+	// ! endpoint to generate login token
 	app.Post("/test", func(c *fiber.Ctx) error {
 		req := new(User)
 		if err := c.BodyParser(req); err != nil {
 			return err
 		}
 		user := &User{
-			Id:     req.Id,
 			Email:  req.Email,
+			Password: req.Password,
 		}
 		token, err := generateToken(*user)
 		if err != nil {
 			return err
 		}
-
+		
 		return c.JSON(fiber.Map{"token": token})
 	})
-
+	
   app.Listen(":8080")
 }
 
 func generateToken(user User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
+	jwtSecretKey := os.Getenv("JWT")
 	claims := token.Claims.(jwt.MapClaims)
-	claims["user_id"] = user.Id
 	claims["user_email"] = user.Email
-	t, err := token.SignedString([]byte("secret"))
+	claims["user_password"] = user.Password
+	t, err := token.SignedString([]byte(jwtSecretKey))
 	if err != nil {
 		return "", err
 	}
-
+	
 	return t, nil
 }
 
-// app.Get("/test", func(c *fiber.Ctx) error {
-	// 	body := c.Body()
-	// 	return c.SendString(string(body))
-	// })
 
-	// func generateToken(user User) (string, int64, error) {
-	// 	exp := time.Now().Add(time.Minute * 30).Unix()
-	// 	token := jwt.New(jwt.SigningMethodHS256)
-	// 	claims := token.Claims.(jwt.MapClaims)
-	// 	claims["user_id"] = user.Id
-	// 	claims["user_email"] = user.Email
-	// 	claims["exp"] = exp
-	// 	t, err := token.SignedString([]byte("secret"))
-	// 	if err != nil {
-	// 		return "", 0, err
-	// 	}
-	
-	// 	return t, exp, nil
-	// }
+// t, err := token.SignedString([]byte("secret"))
 
-		// return c.JSON(fiber.Map{"token": token, "exp": exp, "user": user})
+// app.Get("/", func(c *fiber.Ctx) error {
+// 	return c.SendString("Hello, World!")
+// })
