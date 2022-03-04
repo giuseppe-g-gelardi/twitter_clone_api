@@ -33,10 +33,6 @@ func main() {
 	err := godotenv.Load("../.env")
 	if err != nil {fmt.Println("Error loading .env")}
 	fmt.Println(".env successfully loaded")
-
-	app.Get("/", func(c *fiber.Ctx) error {
-	return c.SendString("Hello, World!")
-	})
 	
 	// ! TEST endpoint to generate login token
 	app.Post("/test", func(c *fiber.Ctx) error {
@@ -130,11 +126,3 @@ func generateRegisterToken(user UserRegisterRequest) (string, error) {
 	return t, nil
 }
 
-
-
-
-// t, err := token.SignedString([]byte("secret"))
-
-// app.Get("/", func(c *fiber.Ctx) error {
-// 	return c.SendString("Hello, World!")
-// })
