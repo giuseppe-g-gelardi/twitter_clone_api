@@ -59,13 +59,12 @@ export const login = async (req: Request, res: Response) => {
     );
     if (!validPassword)return res.status(400).json("Invalid email or password.");
   
-    // const token: string = user.generateAuthToken() // ? method to generate token
-    const response = await axios.post('http://localhost:8080/login', {
-      email: user.email,
-      password: user.password
+    // const token: string = user.generateAuthToken() // ? schema method to generate token
+    const response = await axios.post('http://localhost:8080/token', {
+      id: user._id
     })
     const token = response.data
-    return res.status(200).send(token);
+    return res.status(200).json(token);
   } catch (error) {
     return res.status(500).json({ message: 'internal server error' })
   }
@@ -83,17 +82,15 @@ export const registerNewUser = async (req: Request, res: Response) => {
       password: await bcrypt.hash(req.body.password, salt),
     })
 
-    // const token: string = await user.generateAuthToken(user._id)
-    const response = await axios.post('http://localhost:8080/login', {
-      username: user.username,
-      email: user.email,
-      password: user.password
+    // const token: string = await user.generateAuthToken(user._id) // ? schema method to generate token
+    const response = await axios.post('http://localhost:8080/token', {
+      id: user._id
     })
     const token = response.data
     if (user) return res
       .header('x-auth-token', token)
       .header('access-control-expose-headers', 'x-auth-token')
-      .json({ _id: user._id, username: user.username, email: user.email });
+      .json(token);
       // .json({ _id: user._id, username: user.username, email: user.email, token });
   } catch (error) {
     return res.status(500).json([error, 'something'])
