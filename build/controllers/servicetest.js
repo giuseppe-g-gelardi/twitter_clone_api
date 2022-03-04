@@ -12,8 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postTest = exports.test = void 0;
+exports.loginTest = exports.postTest = exports.test = void 0;
 const axios_1 = __importDefault(require("axios"));
+const userModel_1 = __importDefault(require("../models/userModel"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const test = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield axios_1.default.get('http://localhost:8080');
@@ -37,3 +39,40 @@ const postTest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.postTest = postTest;
+const loginTest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let user = yield userModel_1.default.findOne({ email: req.body.email });
+        if (!user)
+            return res.status(400).json("Invalid Credentials");
+        console.log(user);
+        const validPassword = yield bcryptjs_1.default.compare(req.body.password, user.password);
+        console.log(validPassword);
+        if (!validPassword)
+            return res.status(400).json("Invalid Credentials");
+        const token = yield axios_1.default.post('http://localhost:8080/login', {
+            username: user.username,
+            email: user.email
+        });
+        return res.status(200).send(token);
+    }
+    catch (error) {
+        console.log('halp');
+        return res.status(500).json({ message: 'internal server error' });
+    }
+});
+exports.loginTest = loginTest;
+// export const login = async (req: Request, res: Response) => {
+//   try {
+//     let user: Users | null = await User.findOne({ email: req.body.email })
+//     if (!user) return res.status(400).json("Invalid email or password.");
+//     const validPassword: boolean = await bcrypt.compare(
+//       req.body.password,
+//       user.password
+//     );
+//     if (!validPassword)return res.status(400).json("Invalid email or password.");
+//     const token: string = user.generateAuthToken()
+//     return res.status(200).send(token);
+//   } catch (error) {
+//     return res.status(500).json({ message: 'internal server error'})
+//   }
+// }

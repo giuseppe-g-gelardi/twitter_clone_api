@@ -8,4 +8,5 @@ const servicetest_1 = require("../controllers/servicetest");
 const router = express_1.default.Router();
 router.get('/', servicetest_1.test);
 router.post('/test', servicetest_1.postTest);
+router.post('/logintest', servicetest_1.loginTest);
 module.exports = router;

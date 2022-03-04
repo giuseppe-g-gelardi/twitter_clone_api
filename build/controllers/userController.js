@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerNewUser = exports.login = exports.deleteUser = exports.findUserById = exports.findByUsername = exports.getAllUsers = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
+const axios_1 = __importDefault(require("axios"));
 // this will return everything but password and updated at
 // const { password, updatedAt, ...other } = user._doc
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -63,7 +64,6 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteUser = deleteUser;
-// ! update to call go server for jwt authentication
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let user = yield userModel_1.default.findOne({ email: req.body.email });
@@ -72,7 +72,12 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const validPassword = yield bcryptjs_1.default.compare(req.body.password, user.password);
         if (!validPassword)
             return res.status(400).json("Invalid email or password.");
-        const token = user.generateAuthToken();
+        // const token: string = user.generateAuthToken() // ? method to generate token
+        const response = yield axios_1.default.post('http://localhost:8080/login', {
+            email: user.email,
+            password: user.password
+        });
+        const token = response.data;
         return res.status(200).send(token);
     }
     catch (error) {

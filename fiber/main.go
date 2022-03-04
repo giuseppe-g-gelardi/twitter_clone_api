@@ -33,8 +33,12 @@ func main() {
 	err := godotenv.Load("../.env")
 	if err != nil {fmt.Println("Error loading .env")}
 	fmt.Println(".env successfully loaded")
+
+	app.Get("/", func(c *fiber.Ctx) error {
+	return c.SendString("Hello, World!")
+	})
 	
-	// ! endpoint to generate login token
+	// ! TEST endpoint to generate login token
 	app.Post("/test", func(c *fiber.Ctx) error {
 		req := new(User)
 		if err := c.BodyParser(req); err != nil {
@@ -48,8 +52,39 @@ func main() {
 		if err != nil {
 			return err
 		}
-		
-		return c.JSON(fiber.Map{"token": token})
+		// return c.JSON(fiber.Map{"token": token})
+		return c.JSON(token)
+	})
+
+	app.Post("/login", func(c *fiber.Ctx) error {
+		req := new(UserLoginRequest)
+		if err := c.BodyParser(req); err != nil { return err }
+
+		user := &UserLoginRequest{
+			Email: req.Email,
+			Password: req.Password,
+		}
+		token, err := generateLoginToken(*user)
+		if err != nil { return err }
+
+		// return c.JSON(fiber.Map{"token": token})
+		return c.JSON(token)
+	})
+
+	app.Post("/register", func(c *fiber.Ctx) error {
+		req := new(UserRegisterRequest)
+		if err := c.BodyParser(req); err != nil { return err }
+
+		user := &UserRegisterRequest{
+			Username: req.Username,
+			Email: req.Email,
+			Password: req.Password,
+		}
+		token, err := generateRegisterToken(*user)
+		if err != nil { return err }
+
+		// return c.JSON(fiber.Map{"token": token})
+		return c.JSON(token)
 	})
 	
   app.Listen(":8080")
@@ -65,9 +100,37 @@ func generateToken(user User) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
 	return t, nil
 }
+
+func generateLoginToken(user UserLoginRequest) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	jwtSecretKey := os.Getenv("JWT")
+	claims := token.Claims.(jwt.MapClaims)
+	claims["user_email"] = user.Email
+	claims["user_password"] = user.Password
+	t, err := token.SignedString([]byte(jwtSecretKey))
+	if err != nil {
+		return "", err
+	}
+	return t, nil
+}
+
+func generateRegisterToken(user UserRegisterRequest) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	jwtSecretKey := os.Getenv("JWT")
+	claims := token.Claims.(jwt.MapClaims)
+	claims["username"] = user.Username
+	claims["email"] = user.Email
+	claims["password"] = user.Password
+	t, err := token.SignedString([]byte(jwtSecretKey))
+	if err != nil {
+		return "", err
+	}
+	return t, nil
+}
+
+
 
 
 // t, err := token.SignedString([]byte("secret"))
