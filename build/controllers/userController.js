@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -18,19 +9,19 @@ const userModel_1 = __importDefault(require("../models/userModel"));
 const axios_1 = __importDefault(require("axios"));
 // this will return everything but password and updated at
 // const { password, updatedAt, ...other } = user._doc
-const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllUsers = async (req, res) => {
     try {
-        const users = yield userModel_1.default.find();
+        const users = await userModel_1.default.find();
         return res.json(users);
     }
     catch (error) {
         return res.status(500).json([error.message, 'Internal server error.']);
     }
-});
+};
 exports.getAllUsers = getAllUsers;
-const findByUsername = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const findByUsername = async (req, res) => {
     try {
-        const user = yield userModel_1.default.findOne({ username: req.params.username });
+        const user = await userModel_1.default.findOne({ username: req.params.username });
         if (!user)
             return res.status(404).json(`User: ${user} not found`);
         return res.status(200).json(user);
@@ -38,11 +29,11 @@ const findByUsername = (req, res) => __awaiter(void 0, void 0, void 0, function*
     catch (error) {
         return res.status(500).json(`Internal server error, ${error}`);
     }
-});
+};
 exports.findByUsername = findByUsername;
-const findUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const findUserById = async (req, res) => {
     try {
-        const user = yield userModel_1.default.findById(req.params.userid);
+        const user = await userModel_1.default.findById(req.params.userid);
         if (!user)
             return res.status(404).json(`User id: ${req.params.userid} not found`);
         return res.status(200).json(user);
@@ -50,11 +41,11 @@ const findUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     catch (error) {
         return res.status(500).json(`Internal server error, ${error}`);
     }
-});
+};
 exports.findUserById = findUserById;
-const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteUser = async (req, res) => {
     try {
-        const user = yield userModel_1.default.findByIdAndRemove(req.params.userid);
+        const user = await userModel_1.default.findByIdAndRemove(req.params.userid);
         if (!user)
             return res.status(404).json(`User with id: ${req.params.userid} not found`);
         return res.status(200).json(`Deleted user: ${user.username}`);
@@ -62,18 +53,18 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     catch (error) {
         return res.status(500).json(`Internal server error, ${error}`);
     }
-});
+};
 exports.deleteUser = deleteUser;
-const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const login = async (req, res) => {
     try {
-        let user = yield userModel_1.default.findOne({ email: req.body.email });
+        let user = await userModel_1.default.findOne({ email: req.body.email });
         if (!user)
             return res.status(400).json("Invalid email or password.");
-        const validPassword = yield bcryptjs_1.default.compare(req.body.password, user.password);
+        const validPassword = await bcryptjs_1.default.compare(req.body.password, user.password);
         if (!validPassword)
             return res.status(400).json("Invalid email or password.");
         // const token: string = user.generateAuthToken() // ? schema method to generate token
-        const response = yield axios_1.default.post('http://localhost:8080/token', {
+        const response = await axios_1.default.post('http://localhost:8080/token', {
             id: user._id
         });
         const token = response.data;
@@ -82,21 +73,21 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         return res.status(500).json({ message: 'internal server error' });
     }
-});
+};
 exports.login = login;
-const registerNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const registerNewUser = async (req, res) => {
     try {
-        const userExists = yield userModel_1.default.findOne({ email: req.body.email });
+        const userExists = await userModel_1.default.findOne({ email: req.body.email });
         if (userExists)
             return res.status(404).json('User already registered');
-        const salt = yield bcryptjs_1.default.genSalt(10);
-        const user = yield userModel_1.default.create({
+        const salt = await bcryptjs_1.default.genSalt(10);
+        const user = await userModel_1.default.create({
             username: req.body.username,
             email: req.body.email,
-            password: yield bcryptjs_1.default.hash(req.body.password, salt),
+            password: await bcryptjs_1.default.hash(req.body.password, salt),
         });
         // const token: string = await user.generateAuthToken(user._id) // ? schema method to generate token
-        const response = yield axios_1.default.post('http://localhost:8080/token', {
+        const response = await axios_1.default.post('http://localhost:8080/token', {
             id: user._id
         });
         const token = response.data;
@@ -110,5 +101,5 @@ const registerNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function
     catch (error) {
         return res.status(500).json([error, 'something']);
     }
-});
+};
 exports.registerNewUser = registerNewUser;
