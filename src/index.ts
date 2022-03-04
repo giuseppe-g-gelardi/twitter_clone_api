@@ -15,6 +15,6 @@ app.use('/api/users/', require('./routes/userRoutes'))
 app.use('/api/posts/', require('./routes/postRoutes'))
 app.use('/api/comments', require('./routes/commentRoutes'))
 
-app.listen(port, () => console.log(`Server started on post: ${port}`))
+app.listen(port, () => console.log(`Server started on port: ${port}`))
 
 
