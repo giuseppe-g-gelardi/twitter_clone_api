@@ -83,11 +83,18 @@ export const registerNewUser = async (req: Request, res: Response) => {
       password: await bcrypt.hash(req.body.password, salt),
     })
 
-    const token: string = await user.generateAuthToken(user._id)
+    // const token: string = await user.generateAuthToken(user._id)
+    const response = await axios.post('http://localhost:8080/login', {
+      username: user.username,
+      email: user.email,
+      password: user.password
+    })
+    const token = response.data
     if (user) return res
       .header('x-auth-token', token)
       .header('access-control-expose-headers', 'x-auth-token')
       .json({ _id: user._id, username: user.username, email: user.email });
+      // .json({ _id: user._id, username: user.username, email: user.email, token });
   } catch (error) {
     return res.status(500).json([error, 'something'])
   }
