@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const userController_1 = require("../controllers/userController");
 const router = express_1.default.Router();
 router.get('/all', userController_1.getAllUsers);
+router.get('/search', userController_1.userSearch);
 router.get('/:username', userController_1.findByUsername);
 router.get('/id/:userid', userController_1.findUserById);
 router.post('/new', userController_1.registerNewUser);

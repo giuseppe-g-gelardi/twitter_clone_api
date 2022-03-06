@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerNewUser = exports.login = exports.deleteUser = exports.findUserById = exports.findByUsername = exports.getAllUsers = void 0;
+exports.registerNewUser = exports.login = exports.deleteUser = exports.findUserById = exports.findByUsername = exports.userSearch = exports.getAllUsers = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const axios_1 = __importDefault(require("axios"));
@@ -19,6 +19,18 @@ const getAllUsers = async (req, res) => {
     }
 };
 exports.getAllUsers = getAllUsers;
+const userSearch = async (req, res) => {
+    try {
+        const users = (await userModel_1.default.find()).filter(user => user.protected === false);
+        if (!users)
+            return res.status(400).json('No public users to show');
+        return res.json(users);
+    }
+    catch (error) {
+        return res.status(500).json('Unable to get users');
+    }
+};
+exports.userSearch = userSearch;
 const findByUsername = async (req, res) => {
     try {
         const user = await userModel_1.default.findOne({ username: req.params.username });

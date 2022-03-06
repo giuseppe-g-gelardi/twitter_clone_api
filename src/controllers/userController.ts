@@ -15,6 +15,17 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 }
 
+export const userSearch = async (req: Request, res: Response) => {
+  try {
+    const users: Users[] = (await User.find()).filter(user => user.protected === false)
+    if (!users) return res.status(400).json('No public users to show')
+
+    return res.json(users)
+  } catch (error: any) {
+    return res.status(500).json('Unable to get users')
+  }
+}
+
 export const findByUsername = async (req: Request, res: Response) => {
   try {
     const user: Users | null = await User.findOne({ username: req.params.username })

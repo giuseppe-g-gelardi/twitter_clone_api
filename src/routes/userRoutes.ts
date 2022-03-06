@@ -5,11 +5,13 @@ import {
   findByUsername, 
   registerNewUser,
   findUserById,
-  deleteUser, 
+  deleteUser,
+  userSearch, 
 } from '../controllers/userController'
 const router = express.Router()
 
 router.get('/all', getAllUsers)
+router.get('/search', userSearch)
 router.get('/:username', findByUsername)
 router.get('/id/:userid', findUserById)
 router.post('/new', registerNewUser)
