@@ -26,19 +26,19 @@ export const getSinglePost = async (req: Request, res: Response) => {
 
 export const getUserPosts = async (req: Request, res: Response) => {
   try {
-    const posts = await Post.find().populate({
+    const posts: Posts[] | null = await Post.find().populate({
       path: 'user',
       select: 'username isVerified profilePicture',
     })
-
+    const user: Users | null = await User.findOne({ username: req.params.username})
     const userposts = posts.filter(post => post.user.username === req.params.username)
-    return res.status(200).send(userposts)
+    return res.status(200).send({user, userposts})
   } catch (error) {
     return res.status(500).json('Trouble fetching user posts')
   }
 }
 
-export const newPost = async (req: Request, res: Response) =>{
+export const newPost = async (req: Request, res: Response) => {
   try {
     const user = await User.findOne({ username: req.params.username })
     if (!user) return res.status(400).json(`User ${req.params.username} not found`)
@@ -62,7 +62,7 @@ export const newPost = async (req: Request, res: Response) =>{
 
 export const deletePost = async (req: Request, res: Response) => {
   try {
-    const post = await Post.findByIdAndRemove(req.params.postid)
+    const post: Posts | null = await Post.findByIdAndRemove(req.params.postid)
     if (!post) return res.status(404).json(`Unable to find post: ${req.params.postid}`)
 
     return res.status(200).json(`Post ${post} successfully deleted`)
@@ -88,7 +88,6 @@ export const likeUnlike = async (req: Request, res: Response) => {
     return res.status(200).json({ post, message })
   } catch (error) {
     res.status(500).send(`Internal server error --Unable to like/unlike post. ${error}`)
-    
   }
 }
 

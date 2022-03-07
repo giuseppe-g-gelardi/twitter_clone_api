@@ -36,8 +36,9 @@ const getUserPosts = async (req, res) => {
             path: 'user',
             select: 'username isVerified profilePicture',
         });
+        const user = await userModel_1.default.findOne({ username: req.params.username });
         const userposts = posts.filter(post => post.user.username === req.params.username);
-        return res.status(200).send(userposts);
+        return res.status(200).send({ user, userposts });
     }
     catch (error) {
         return res.status(500).json('Trouble fetching user posts');
