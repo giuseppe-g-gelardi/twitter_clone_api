@@ -19,7 +19,7 @@ func main() {
 	app := fiber.New()
 
 	// * load .env file
-	err := godotenv.Load("../.env")
+	err := godotenv.Load(".env")
 	if err != nil {fmt.Println("Error loading .env")}
 	fmt.Println(".env successfully loaded")
 	
@@ -36,7 +36,6 @@ func main() {
 		if err != nil {
 			return err
 		}
-		// return c.JSON(fiber.Map{"token": token})
 		return c.JSON(token)
 	})
 	
