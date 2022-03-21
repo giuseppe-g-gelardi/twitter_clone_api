@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerNewUser = exports.login = exports.deleteUser = exports.findUserById = exports.findByUsername = exports.userSearch = exports.getAllUsers = void 0;
+exports.followAndUnfollowUsers = exports.registerNewUser = exports.login = exports.deleteUser = exports.findUserById = exports.findByUsername = exports.userSearch = exports.getAllUsers = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const axios_1 = __importDefault(require("axios"));
@@ -115,3 +115,39 @@ const registerNewUser = async (req, res) => {
     }
 };
 exports.registerNewUser = registerNewUser;
+const followAndUnfollowUsers = async (req, res) => {
+    // const user = await User.find({ username: req.params.username })
+    // if (!user) return res.status(400).json('cant find user')
+    // return res.json({ message: "follow and unfollow users is working ish"})
+};
+exports.followAndUnfollowUsers = followAndUnfollowUsers;
+// ! follow AND unfollow user. working? will test more
+router.put('/:id/follow', async (req, res) => {
+    // return res.status(200).send('endpoint works')
+    if (req.body.userid !== req.params.id) {
+        try {
+            const user = await userModel_1.default.findById(req.params.id);
+            const currentUser = await userModel_1.default.findById(req.body.userid);
+            let message;
+            if (user.followers.includes(req.body.userid)) {
+                user.followers.pull(req.body.userid);
+                currentUser.following.pull(req.params.id);
+                message = 'You are no longer following this user';
+            }
+            else {
+                user.followers.push(req.body.userid);
+                currentUser.following.push(req.params.id);
+                message = 'You are now following this user';
+            }
+            await user.save();
+            await currentUser.save();
+            return res.status(200).send(message);
+        }
+        catch (err) {
+            res.status(500).send('ERR BRUH');
+        }
+    }
+    else {
+        res.status(403).send(err.message);
+    }
+});

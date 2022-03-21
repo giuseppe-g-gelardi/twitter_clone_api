@@ -10,6 +10,7 @@ router.get('/all', userController_1.getAllUsers);
 router.get('/search', userController_1.userSearch);
 router.get('/:username', userController_1.findByUsername);
 router.get('/id/:userid', userController_1.findUserById);
+router.put('/:username/following', userController_1.followAndUnfollowUsers);
 router.post('/new', userController_1.registerNewUser);
 router.post('/login', userController_1.login);
 router.delete('/id/:userid', userController_1.deleteUser);

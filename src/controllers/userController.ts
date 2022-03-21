@@ -92,7 +92,6 @@ export const registerNewUser = async (req: Request, res: Response) => {
       email: req.body.email,
       password: await bcrypt.hash(req.body.password, salt),
     })
-
     // const token: string = await user.generateAuthToken(user._id) // ? schema method to generate token
     const response = await axios.post('http://localhost:8080/token', {
       id: user._id
@@ -107,3 +106,43 @@ export const registerNewUser = async (req: Request, res: Response) => {
     return res.status(500).json([error, 'something'])
   }
 }
+
+export const followAndUnfollowUsers = async (req: Request, res: Response) => {
+  // const user = await User.find({ username: req.params.username })
+  // if (!user) return res.status(400).json('cant find user')
+
+  return res.json({ message: "follow and unfollow users is working ish"})
+
+
+}
+
+// // ! follow AND unfollow user. working? will test more
+// router.put('/:id/follow', async (req, res) => {
+//   // return res.status(200).send('endpoint works')
+//   if (req.body.userid !== req.params.id) {
+//     try {
+//       const user = await User.findById(req.params.id)
+//       const currentUser = await User.findById(req.body.userid)
+
+//       let message;
+//       if (user.followers.includes(req.body.userid)) {
+//         user.followers.pull(req.body.userid)
+//         currentUser.following.pull(req.params.id)
+//         message = 'You are no longer following this user'
+//       } else {
+//         user.followers.push(req.body.userid)
+//         currentUser.following.push(req.params.id)
+//         message = 'You are now following this user'
+//       }
+//       await user.save()
+//       await currentUser.save()
+//       return res.status(200).send(message)
+      
+//   } catch (err) {
+//     res.status(500).send('ERR BRUH')
+//   }
+
+//   } else {
+//     res.status(403).send(err.message)
+//   }
+// })
