@@ -116,9 +116,36 @@ const registerNewUser = async (req, res) => {
 };
 exports.registerNewUser = registerNewUser;
 const followAndUnfollowUsers = async (req, res) => {
-    // const user = await User.find({ username: req.params.username })
-    // if (!user) return res.status(400).json('cant find user')
-    return res.json({ message: "follow and unfollow users is working ish" });
+    if (req.body.username !== req.params.username) {
+        try {
+            const user = await userModel_1.default.findOne({ username: req.params.username });
+            if (!user)
+                return res.status(404).json({ message: `ERR! User ${req.params.username} not found.` });
+            const currentUser = await userModel_1.default.findOne({ username: req.body.username });
+            if (!currentUser)
+                return res.status(404).json({ message: `ERRRR! User [logged in user] ${req.body.username} not found.` });
+            let message;
+            if (user?.followers?.includes(req.body.username)) {
+                user?.followers?.pull(req.body.username);
+                currentUser?.following?.pull(req.params.username);
+                message = 'You are no longer following this user';
+            }
+            else {
+                user?.followers?.push(req.body.username);
+                currentUser?.following?.push(req.params.username);
+                message = 'You are now following';
+            }
+            await user?.save();
+            await currentUser?.save();
+            return res.status(200).json(message);
+        }
+        catch (error) {
+            res.status(500).json(error.message);
+        }
+    }
+    else {
+        res.status(403).json('this is the else block');
+    }
 };
 exports.followAndUnfollowUsers = followAndUnfollowUsers;
 // // ! follow AND unfollow user. working? will test more
