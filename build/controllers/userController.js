@@ -118,36 +118,33 @@ exports.registerNewUser = registerNewUser;
 const followAndUnfollowUsers = async (req, res) => {
     // const user = await User.find({ username: req.params.username })
     // if (!user) return res.status(400).json('cant find user')
-    // return res.json({ message: "follow and unfollow users is working ish"})
+    return res.json({ message: "follow and unfollow users is working ish" });
 };
 exports.followAndUnfollowUsers = followAndUnfollowUsers;
-// ! follow AND unfollow user. working? will test more
-router.put('/:id/follow', async (req, res) => {
-    // return res.status(200).send('endpoint works')
-    if (req.body.userid !== req.params.id) {
-        try {
-            const user = await userModel_1.default.findById(req.params.id);
-            const currentUser = await userModel_1.default.findById(req.body.userid);
-            let message;
-            if (user.followers.includes(req.body.userid)) {
-                user.followers.pull(req.body.userid);
-                currentUser.following.pull(req.params.id);
-                message = 'You are no longer following this user';
-            }
-            else {
-                user.followers.push(req.body.userid);
-                currentUser.following.push(req.params.id);
-                message = 'You are now following this user';
-            }
-            await user.save();
-            await currentUser.save();
-            return res.status(200).send(message);
-        }
-        catch (err) {
-            res.status(500).send('ERR BRUH');
-        }
-    }
-    else {
-        res.status(403).send(err.message);
-    }
-});
+// // ! follow AND unfollow user. working? will test more
+// router.put('/:id/follow', async (req, res) => {
+//   // return res.status(200).send('endpoint works')
+//   if (req.body.userid !== req.params.id) {
+//     try {
+//       const user = await User.findById(req.params.id)
+//       const currentUser = await User.findById(req.body.userid)
+//       let message;
+//       if (user.followers.includes(req.body.userid)) {
+//         user.followers.pull(req.body.userid)
+//         currentUser.following.pull(req.params.id)
+//         message = 'You are no longer following this user'
+//       } else {
+//         user.followers.push(req.body.userid)
+//         currentUser.following.push(req.params.id)
+//         message = 'You are now following this user'
+//       }
+//       await user.save()
+//       await currentUser.save()
+//       return res.status(200).send(message)
+//   } catch (err) {
+//     res.status(500).send('ERR BRUH')
+//   }
+//   } else {
+//     res.status(403).send(err.message)
+//   }
+// })
