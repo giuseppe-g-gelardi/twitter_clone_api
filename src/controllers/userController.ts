@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import User, { Users } from '../models/userModel'
 import axios from 'axios'
 
+// ! reimplement plz
 // this will return everything but password and updated at
 // const { password, updatedAt, ...other } = user._doc
 
@@ -110,7 +111,6 @@ export const registerNewUser = async (req: Request, res: Response) => {
 export const followAndUnfollowUsers = async (req: Request, res: Response) => {
   if (req.body.username !== req.params.username) {
     try {
-
       const user: Users | null = await User.findOne({ username: req.params.username })
       if (!user) return res.status(404).json({ message: `ERR! User ${req.params.username} not found.`})
 
@@ -136,37 +136,5 @@ export const followAndUnfollowUsers = async (req: Request, res: Response) => {
   } else {
     res.status(403).json('this is the else block')
   }
-
-
 }
 
-// // ! follow AND unfollow user. working? will test more
-// router.put('/:id/follow', async (req, res) => {
-//   // return res.status(200).send('endpoint works')
-//   if (req.body.userid !== req.params.id) {
-//     try {
-//       const user = await User.findById(req.params.id)
-//       const currentUser = await User.findById(req.body.userid)
-
-//       let message;
-//       if (user.followers.includes(req.body.userid)) {
-//         user.followers.pull(req.body.userid)
-//         currentUser.following.pull(req.params.id)
-//         message = 'You are no longer following this user'
-//       } else {
-//         user.followers.push(req.body.userid)
-//         currentUser.following.push(req.params.id)
-//         message = 'You are now following this user'
-//       }
-//       await user.save()
-//       await currentUser.save()
-//       return res.status(200).send(message)
-      
-//   } catch (err) {
-//     res.status(500).send('ERR BRUH')
-//   }
-
-//   } else {
-//     res.status(403).send(err.message)
-//   }
-// })

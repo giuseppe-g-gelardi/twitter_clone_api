@@ -7,6 +7,7 @@ exports.followAndUnfollowUsers = exports.registerNewUser = exports.login = expor
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const axios_1 = __importDefault(require("axios"));
+// ! reimplement plz
 // this will return everything but password and updated at
 // const { password, updatedAt, ...other } = user._doc
 const getAllUsers = async (req, res) => {
@@ -148,30 +149,3 @@ const followAndUnfollowUsers = async (req, res) => {
     }
 };
 exports.followAndUnfollowUsers = followAndUnfollowUsers;
-// // ! follow AND unfollow user. working? will test more
-// router.put('/:id/follow', async (req, res) => {
-//   // return res.status(200).send('endpoint works')
-//   if (req.body.userid !== req.params.id) {
-//     try {
-//       const user = await User.findById(req.params.id)
-//       const currentUser = await User.findById(req.body.userid)
-//       let message;
-//       if (user.followers.includes(req.body.userid)) {
-//         user.followers.pull(req.body.userid)
-//         currentUser.following.pull(req.params.id)
-//         message = 'You are no longer following this user'
-//       } else {
-//         user.followers.push(req.body.userid)
-//         currentUser.following.push(req.params.id)
-//         message = 'You are now following this user'
-//       }
-//       await user.save()
-//       await currentUser.save()
-//       return res.status(200).send(message)
-//   } catch (err) {
-//     res.status(500).send('ERR BRUH')
-//   }
-//   } else {
-//     res.status(403).send(err.message)
-//   }
-// })
