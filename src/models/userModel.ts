@@ -29,7 +29,7 @@ userSchema.methods.generateAuthToken = function(): string {
   return jwt.sign({ _id: this._id, username: this.username, email: this.email}, process.env.JWT!)
 }
 
-export interface Users {
+export interface Users extends mongoose.Document {
   _id: string
   username: string
   email: string
@@ -41,8 +41,10 @@ export interface Users {
   profilePicture?: string
   profileBanner?: string
   protected?: boolean
-  followers?: Users[]
-  following?: Users[]
+  // followers?: Users[]
+  followers?: mongoose.Types.Array<Users>
+  // following?: Users[]
+  following?: mongoose.Types.Array<Users>
   isAdmin?: boolean
   isVerified?: boolean
   posts?: Posts[]
