@@ -1,13 +1,18 @@
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import dbLogDecoration from '../util/dbLogDecoration'
 
 dotenv.config()
+
 
 export async function connectDB(): Promise<void> {
   const connectionString: string = process.env.DB!
   try {
     const connect = await mongoose.connect(connectionString)
-    console.log(`MongoBD Connected: ${connect.connection.host}`)
+    const host = connect.connection.host
+    // console.log('MongoDB connection successful')
+    // console.log(`Connected @: ${host}`)
+    dbLogDecoration(host)
   } catch (error) {
     console.log(error)
     process.exit(1)
