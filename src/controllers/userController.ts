@@ -101,7 +101,7 @@ export const registerNewUser = async (req: Request, res: Response) => {
     if (user) return res
       .header('x-auth-token', token)
       .header('access-control-expose-headers', 'x-auth-token')
-      .json(token);
+      .json(user);
       // .json({ _id: user._id, username: user.username, email: user.email, token });
   } catch (error) {
     return res.status(500).json([error, 'something'])

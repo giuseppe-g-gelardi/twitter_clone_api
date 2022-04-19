@@ -20,7 +20,7 @@ export const userSchema: Schema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   posts: [{ type: mongoose.Types.ObjectId, ref: 'Post', default: [] }],
   notifications: { type: Array, default: [] },
-  theme: { type: String, default: 'light'},
+  theme: { type: String, default: 'light'}, // change to boolean in future
   createdAt: { type: String },
   updatedAt: { type: String }
 }, { timestamps: true })
