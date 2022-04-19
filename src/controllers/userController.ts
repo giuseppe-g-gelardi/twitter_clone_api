@@ -7,7 +7,7 @@ import axios from 'axios'
 // this will return everything but password and updated at
 // const { password, updatedAt, ...other } = user._doc
 
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAllUsers = async (_req: Request, res: Response) => {
   try {
     const users: Users[] = await User.find()
     return res.json(users)
@@ -16,7 +16,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 }
 
-export const userSearch = async (req: Request, res: Response) => {
+export const userSearch = async (_req: Request, res: Response) => {
   try {
     const users: Users[] = (await User.find()).filter(user => user.protected === false)
     if (!users) return res.status(400).json('No public users to show')
@@ -76,7 +76,7 @@ export const login = async (req: Request, res: Response) => {
       id: user._id
     })
     const token = response.data
-    return res.status(200).json(token);
+    return res.status(200).json(user);
   } catch (error) {
     return res.status(500).json({ message: 'internal server error' })
   }
@@ -108,6 +108,7 @@ export const registerNewUser = async (req: Request, res: Response) => {
   }
 }
 
+// TODO: push notification when following
 export const followAndUnfollowUsers = async (req: Request, res: Response) => {
   if (req.body.username !== req.params.username) {
     try {
