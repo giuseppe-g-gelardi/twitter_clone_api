@@ -32,7 +32,7 @@ export const getUserPosts = async (req: Request, res: Response) => {
     })
     const user: Users | null = await User.findOne({ username: req.params.username})
     const userposts = posts.filter(post => post.user.username === req.params.username)
-    return res.status(200).send({user, userposts})
+    return res.status(200).json(userposts)
   } catch (error) {
     return res.status(500).json('Trouble fetching user posts')
   }
