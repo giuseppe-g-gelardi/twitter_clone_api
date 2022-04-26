@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import Post, { Posts } from '../models/postModel'
 import User, { Users } from '../models/userModel'
 
-export const getAllPosts = async (req: Request, res: Response) => {
+export const getAllPosts = async (_req: Request, res: Response) => {
   try {
     const posts: Posts[] = await Post.find()
     if (!posts) return res.status(404).json('no posts found')

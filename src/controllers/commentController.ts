@@ -3,7 +3,7 @@ import Comment from '../models/commentModel'
 import Post from '../models/postModel'
 import User from '../models/userModel'
 
-export const getAllComments = async (req: Request, res: Response) => {
+export const getAllComments = async (_req: Request, res: Response) => {
   try {
     const comments = await Comment.find()
     if (!comments) return res.status(404).json('No comments to show?')
@@ -29,8 +29,10 @@ export const postNewComment = async (req: Request, res: Response) => {
     })
     await comment.save()
 
-    post.comments.push(comment._id)
-    await user.save()
+    post.comments.push(comment)
+    // post.comments.push(comment._id)
+    await post.save()
+    // await user.save()
 
     return res.json(comment)
   } catch (error: any) {
