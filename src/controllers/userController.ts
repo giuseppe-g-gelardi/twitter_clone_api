@@ -139,3 +139,23 @@ export const followAndUnfollowUsers = async (req: Request, res: Response) => {
   }
 }
 
+export const uploadProfilePicture = async (req: Request, res: Response) => {
+
+    try {
+      let user = await User.findOne({ username: req.params.username })
+      if (!user) return res.status(400).json('user not found')
+
+      const image = req.body.image
+
+      if (user.profilePicture) {
+        user.profilePicture = ''
+        user.profilePicture = image
+      }
+
+      await user.save()
+
+      res.status(200).json(user)
+    } catch (err) {
+      return res.status(500).json(err)
+    }
+} 

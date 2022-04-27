@@ -41,9 +41,7 @@ export interface Users extends mongoose.Document {
   profilePicture?: string
   profileBanner?: string
   protected?: boolean
-  // followers?: Users[]
   followers?: mongoose.Types.Array<Users>
-  // following?: Users[]
   following?: mongoose.Types.Array<Users>
   isAdmin?: boolean
   isVerified?: boolean
