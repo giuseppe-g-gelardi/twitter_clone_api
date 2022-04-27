@@ -160,3 +160,17 @@ export const uploadProfilePicture = async (req: Request, res: Response) => {
       return res.status(500).json(err)
     }
 } 
+
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+
+    const user: Users | null = await User.findOneAndUpdate({ username: req.params.username }, {
+      $set: req.body,
+    })
+    if (!user) return res.status(404).json('user not found')
+    
+    res.status(200).json('Account has been updated')
+  } catch (err) {
+    return res.status(500).json(err)
+  }
+}
