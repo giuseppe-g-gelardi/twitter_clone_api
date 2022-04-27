@@ -147,10 +147,11 @@ export const uploadProfilePicture = async (req: Request, res: Response) => {
 
       const image = req.body.image
 
-      if (user.profilePicture) {
+      if (user.profilePicture.length !== '') {
         user.profilePicture = ''
         user.profilePicture = image
       }
+      user.profilePicture = image
 
       await user.save()
 
