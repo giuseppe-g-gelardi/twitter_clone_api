@@ -4,7 +4,7 @@ import { Posts } from './postModel'
 import { Notifications } from './notificationsModel'
 
 export const userSchema: Schema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
+  username: { type: String, required: true, unique: true, minlength: 3 },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true, minlength: 6 },
   firstname: { type: String, default: '' },

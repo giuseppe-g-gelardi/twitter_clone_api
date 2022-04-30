@@ -104,3 +104,45 @@ export const getPostLikes = async (req: Request, res: Response) => {
     return res.status(500).json(`unable to find likes... ${error}`)
   }
 }
+
+export const getFeed = async (req: Request, res: Response) => {
+  try {
+    let feed: { user: { id: any; username: any; profilePicture: any; verified: any }; post: any }[] = []
+    const user: Users | null = await User.findOne({ username: req.params.username})
+    const following = await User.find({ 'username': { $in: user?.following } })
+    following.forEach(u => {
+      u.posts.forEach((post: any) => {
+        feed.push({ 
+          user: {
+            id: u._id,
+            username: u.username,
+            profilePicture: u.profilePicture,
+            verified: u.isVerified
+        }, post: post })
+      })
+    })
+    
+    return res.send(feed)
+  } catch (err) {
+    res.status(500).send(err.message)
+  }
+}
+
+// export const getFeed = async (req: Request, res: Response) => {
+
+//   // declare feed posts
+//   // feed = []
+
+//   // user = params.user
+//   // followedUsers = user.following
+
+//   // iterate through followedUsers
+
+//   // for Each followed user
+//   // push posts into feed
+
+//   // order feed by order of most recent
+
+//   // ! I CAN DO THIS
+
+// }
