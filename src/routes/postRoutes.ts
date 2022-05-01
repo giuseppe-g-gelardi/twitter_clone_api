@@ -7,7 +7,6 @@ import {
   deletePost, 
   likeUnlike, 
   getPostLikes,
-  getFeed,
 } from '../controllers/postController'
 const router = express.Router()
 
@@ -18,6 +17,5 @@ router.get('/:username/posts', getUserPosts)
 router.delete('/:postid', deletePost)
 router.put('/:postid/likes', likeUnlike)
 router.get('/:postid/likes', getPostLikes)
-router.get('/:username/feed', getFeed)
 
 module.exports = router

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import e, { Request, Response } from 'express'
 import Post, { Posts } from '../models/postModel'
 import User, { Users } from '../models/userModel'
 
@@ -10,17 +10,6 @@ export const getAllPosts = async (_req: Request, res: Response) => {
     return res.status(200).json(posts)
   } catch (error) {
     return res.status(500).json('Internal server error, unable to fetch posts')
-  }
-}
-
-export const getSinglePost = async (req: Request, res: Response) => {
-  try {
-    const post: Posts | null = await Post.findOne({ _id: req.params.postid})
-    if (!post) return res.status(500).json(`Post ${req.params.postid} not found`)
-
-    return res.status(200).json(post)
-  } catch (error) {
-    return res.status(500).json(`Internal server error: ${error}`)
   }
 }
 
@@ -37,6 +26,17 @@ export const getUserPosts = async (req: Request, res: Response) => {
     return res.status(500).json('Trouble fetching user posts')
   }
 }
+export const getSinglePost = async (req: Request, res: Response) => {
+  try {
+    const post: Posts | null = await Post.findOne({ _id: req.params.postid})
+    if (!post) return res.status(500).json(`Post ${req.params.postid} not found`)
+
+    return res.status(200).json(post)
+  } catch (error) {
+    return res.status(500).json(`Internal server error: ${error}`)
+  }
+}
+
 
 export const newPost = async (req: Request, res: Response) => {
   try {
@@ -105,44 +105,4 @@ export const getPostLikes = async (req: Request, res: Response) => {
   }
 }
 
-export const getFeed = async (req: Request, res: Response) => {
-  try {
-    let feed: { user: { id: any; username: any; profilePicture: any; verified: any }; post: any }[] = []
-    const user: Users | null = await User.findOne({ username: req.params.username})
-    const following = await User.find({ 'username': { $in: user?.following } })
-    following.forEach(u => {
-      u.posts.forEach((post: any) => {
-        feed.push({ 
-          user: {
-            id: u._id,
-            username: u.username,
-            profilePicture: u.profilePicture,
-            verified: u.isVerified
-        }, post: post })
-      })
-    })
-    
-    return res.send(feed)
-  } catch (err) {
-    res.status(500).send(err.message)
-  }
-}
 
-// export const getFeed = async (req: Request, res: Response) => {
-
-//   // declare feed posts
-//   // feed = []
-
-//   // user = params.user
-//   // followedUsers = user.following
-
-//   // iterate through followedUsers
-
-//   // for Each followed user
-//   // push posts into feed
-
-//   // order feed by order of most recent
-
-//   // ! I CAN DO THIS
-
-// }

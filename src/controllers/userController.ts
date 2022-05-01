@@ -169,7 +169,7 @@ export const updateUser = async (req: Request, res: Response) => {
     })
     if (!user) return res.status(404).json('user not found')
     
-    res.status(200).json('Account has been updated')
+    res.status(200).json('Account has been')
   } catch (err) {
     return res.status(500).json(err)
   }
