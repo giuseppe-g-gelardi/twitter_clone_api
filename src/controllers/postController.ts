@@ -1,4 +1,4 @@
-import e, { Request, Response } from 'express'
+import { Request, Response } from 'express'
 import Post, { Posts } from '../models/postModel'
 import User, { Users } from '../models/userModel'
 
