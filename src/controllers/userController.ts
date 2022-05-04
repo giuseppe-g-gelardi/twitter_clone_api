@@ -139,8 +139,31 @@ export const followAndUnfollowUsers = async (req: Request, res: Response) => {
   }
 }
 
-export const uploadProfilePicture = async (req: Request, res: Response) => {
+export const uploadProfileBanner = async (req: Request, res: Response) => {
+  try {
 
+    let user = await User.findOne({ username: req.params.username })
+    if (!user) return res.status(400).json('user not found')
+
+    const image = req.body.image
+
+    if (user.profileBanner.length !== '') {
+      user.profileBanner = ''
+      user.profileBanner = image
+    }
+    user.profileBanner = image
+
+    await user.save()
+
+    res.status(200).json(user)
+    
+  } catch (error) {
+    return res.status(500).json(error)
+    
+  }
+}
+
+export const uploadProfilePicture = async (req: Request, res: Response) => {
     try {
       let user = await User.findOne({ username: req.params.username })
       if (!user) return res.status(400).json('user not found')

@@ -14,6 +14,17 @@ export const getAllComments = async (_req: Request, res: Response) => {
   }
 }
 
+export const getComment = async (req: Request, res: Response) => {
+  try {
+    const comment = await Comment.findOne({ _id: req.params.commentid })
+    if (!comment) return res.status(400).json('unable to find comment')
+
+    return res.status(200).json(comment)
+  } catch (error) {
+    return res.status(500).json(`Internal server error: ${error}`)
+  }
+}
+
 export const postNewComment = async (req: Request, res: Response) => {
   try {
     const post = await Post.findOne({_id: req.params.postid})
