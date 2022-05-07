@@ -53,11 +53,11 @@ export const postNewComment = async (req: Request, res: Response) => {
 
 export const likeUnlikeComment = async (req: Request, res: Response) => {
   try {
-    const user = await User.find({ username: req.params.username })
-    if (!user) return res.status(404).json(`User ${req.params.username} does not exist`)
+    // const user = await User.find({ username: req.params.username })
+    // if (!user) return res.status(404).json(`User ${req.params.username} does not exist`)
 
-    let post = await Post.findById(req.params.postid)
-    if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
+    // let post = await Post.findById(req.params.postid)
+    // if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
 
     let comment = await Comment.findById(req.params.commentid)
     if (!comment) return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`)
