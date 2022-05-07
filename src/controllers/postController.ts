@@ -17,7 +17,7 @@ export const getUserPosts = async (req: Request, res: Response) => {
   try {
     const posts: Posts[] | null = await Post.find().populate({
       path: 'user',
-      select: 'username isVerified profilePicture',
+      // select: 'username isVerified profilePicture',
     })
     const user: Users | null = await User.findOne({ username: req.params.username})
     const userposts = posts.filter(post => post.user.username === req.params.username)
