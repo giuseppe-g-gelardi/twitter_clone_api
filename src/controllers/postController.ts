@@ -87,15 +87,19 @@ export const likeUnlike = async (req: Request, res: Response) => {
       post.likes.pull(req.body.userid)
       message = 'disliked'
     } else {
-      post.likes.push(req.body.userid)
-      notification = `${liker.username} liked your post!`
-      user.notifications.push(notification)
-      message = 'liked'
-    
+      if (user.username !== liker.username) {
+        post.likes.push(req.body.userid)
+        message = 'liked'
+        notification = `${liker.username} liked your post!`
+        user.notifications.push(notification)
+      } else if (user.username === liker.username) {
+        post.likes.push(req.body.userid)
+        message = 'liked'
+      }
     }
     await user.save()
     await post.save()
-    return res.status(200).json({ post, message, user })
+    return res.status(200).json({ post, message, notification })
   } catch (error) {
     res.status(500).send(`Internal server error --Unable to like/unlike post. ${error}`)
   }
