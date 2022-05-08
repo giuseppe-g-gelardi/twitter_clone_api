@@ -42,7 +42,7 @@ export const findUserById = async (req: Request, res: Response) => {
   try {
     const user: Users | null = await User.findById(req.params.userid)
     if (!user) return res.status(404).json(`User id: ${req.params.userid} not found`)
-    
+
     return res.status(200).json(user)
   } catch (error) {
     return res.status(500).json(`Internal server error, ${error}`)
@@ -64,13 +64,13 @@ export const login = async (req: Request, res: Response) => {
   try {
     let user: Users | null = await User.findOne({ email: req.body.email })
     if (!user) return res.status(400).json("Invalid email or password.");
-  
+
     const validPassword: boolean = await bcrypt.compare(
       req.body.password,
       user.password
     );
-    if (!validPassword)return res.status(400).json("Invalid email or password.");
-  
+    if (!validPassword) return res.status(400).json("Invalid email or password.");
+
     // const token: string = user.generateAuthToken() // ? schema method to generate token
     const response = await axios.post('http://localhost:8080/token', {
       id: user._id
@@ -102,7 +102,7 @@ export const registerNewUser = async (req: Request, res: Response) => {
       .header('x-auth-token', token)
       .header('access-control-expose-headers', 'x-auth-token')
       .json(user);
-      // .json({ _id: user._id, username: user.username, email: user.email, token });
+    // .json({ _id: user._id, username: user.username, email: user.email, token });
   } catch (error) {
     return res.status(500).json([error, 'something'])
   }
@@ -113,10 +113,10 @@ export const followAndUnfollowUsers = async (req: Request, res: Response) => {
   if (req.body.username !== req.params.username) {
     try {
       const user: Users | null = await User.findOne({ username: req.params.username })
-      if (!user) return res.status(404).json({ message: `ERR! User ${req.params.username} not found.`})
+      if (!user) return res.status(404).json({ message: `ERR! User ${req.params.username} not found.` })
 
       const currentUser: Users | null = await User.findOne({ username: req.body.username })
-      if (!currentUser) return res.status(404).json({ message: `ERRRR! User [logged in user] ${req.body.username} not found.`})
+      if (!currentUser) return res.status(404).json({ message: `ERRRR! User [logged in user] ${req.body.username} not found.` })
 
       let message;
       if (user?.followers?.includes(req.body.username)) {
@@ -156,33 +156,33 @@ export const uploadProfileBanner = async (req: Request, res: Response) => {
     await user.save()
 
     res.status(200).json(user)
-    
+
   } catch (error) {
     return res.status(500).json(error)
-    
+
   }
 }
 
 export const uploadProfilePicture = async (req: Request, res: Response) => {
-    try {
-      let user = await User.findOne({ username: req.params.username })
-      if (!user) return res.status(400).json('user not found')
+  try {
+    let user = await User.findOne({ username: req.params.username })
+    if (!user) return res.status(400).json('user not found')
 
-      const image = req.body.image
+    const image = req.body.image
 
-      if (user.profilePicture.length !== '') {
-        user.profilePicture = ''
-        user.profilePicture = image
-      }
+    if (user.profilePicture.length !== '') {
+      user.profilePicture = ''
       user.profilePicture = image
-
-      await user.save()
-
-      res.status(200).json(user)
-    } catch (err) {
-      return res.status(500).json(err)
     }
-} 
+    user.profilePicture = image
+
+    await user.save()
+
+    res.status(200).json(user)
+  } catch (err) {
+    return res.status(500).json(err)
+  }
+}
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
@@ -191,9 +191,24 @@ export const updateUser = async (req: Request, res: Response) => {
       $set: req.body,
     })
     if (!user) return res.status(404).json('user not found')
-    
+
     res.status(200).json('Account has been updated!')
   } catch (err) {
     return res.status(500).json(err)
+  }
+}
+
+export const clearNotifications = async (req: Request, res: Response) => {
+  try {
+    const user: Users | null = await User.findOneAndUpdate({ username: req.params.username })
+    if (!user) return res.status(400).json('unable to find user')
+
+    let notifications: any  = user.notifications
+    notifications.splice(0, notifications.length)
+
+    await user.save()
+    return res.status(200).json('notifications cleared!')
+  } catch (error) {
+    return res.status(500).json(error)
   }
 }

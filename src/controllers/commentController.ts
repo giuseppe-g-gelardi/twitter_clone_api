@@ -62,7 +62,19 @@ export const likeUnlikeComment = async (req: Request, res: Response) => {
     let comment = await Comment.findById(req.params.commentid)
     if (!comment) return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`)
 
+
+    // let post = await Post.findById(req.params.postid)
+    // if (!post) return res.status(404).json(`Post not found`)
+
+    // let user = await User.findById(post.user)
+    // if (!user) return res.status(400).json(`user not found`)
+
+    // let liker = await User.findById(req.body.userid)
+    // let message;
+    // let notification
+
     let message: string;
+    let notification;
     if (comment.likes.includes(req.body.userid)) {
       comment.likes.pull(req.body.userid)
       message = 'disliked'
@@ -70,6 +82,21 @@ export const likeUnlikeComment = async (req: Request, res: Response) => {
       comment.likes.push(req.body.userid)
       message = 'liked'
     }
+
+
+    // if (user.username !== liker.username) {
+    //   post.likes.push(req.body.userid)
+    //   message = 'liked'
+    //   notification = `${liker.username} liked your post!`
+    //   user.notifications.push(notification)
+    // } else if (user.username === liker.username) {
+    //   post.likes.push(req.body.userid)
+    //   message = 'liked'
+    // }
+
+
+
+
 
     await comment.save()
     return res.status(200).json({ comment, message })
