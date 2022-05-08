@@ -18,6 +18,7 @@ export const userSchema: Schema = new mongoose.Schema({
   isAdmin: { type: Boolean, default: false },
   isVerified: { type: Boolean, default: false },
   posts: [{ type: mongoose.Types.ObjectId, ref: 'Post', default: [] }],
+  // notifications: { type: mongoose.Types.ObjectId, ref: 'Notification', default: [] },
   notifications: { type: Array, default: [] },
   theme: { type: String, default: 'light'}, // change to boolean in future
   createdAt: { type: String },
@@ -45,7 +46,7 @@ export interface Users extends mongoose.Document {
   isAdmin?: boolean
   isVerified?: boolean
   posts?: Posts[]
-  notifications?: any[]
+  notifications?: any[] // set up notifications model
   theme?: string // could be boolean actually // prefersDark: t / f
   createdAt?: string
   updatedAt?: string
