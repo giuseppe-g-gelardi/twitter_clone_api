@@ -90,11 +90,15 @@ export const likeUnlike = async (req: Request, res: Response) => {
       if (user.username !== liker.username) {
         post.likes.push(req.body.userid)
         message = 'liked'
-        // notification = `${liker.username} liked your post! ${post._id}`
+
         notification = {
+          to: user._id,
+          from: liker._id,
+          notificationType: 'post_like',
           message: `${liker.username} liked your post!`,
           post: post._id
         }
+        
         user.notifications.push(notification)
       } else if (user.username === liker.username) {
         post.likes.push(req.body.userid)
