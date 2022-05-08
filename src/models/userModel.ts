@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 import jwt from 'jsonwebtoken'
 import { Posts } from './postModel'
-import { Notifications } from './notificationsModel'
 
 export const userSchema: Schema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, minlength: 3 },
@@ -46,7 +45,7 @@ export interface Users extends mongoose.Document {
   isAdmin?: boolean
   isVerified?: boolean
   posts?: Posts[]
-  notifications?: Notifications[]
+  notifications?: any[]
   theme?: string // could be boolean actually // prefersDark: t / f
   createdAt?: string
   updatedAt?: string

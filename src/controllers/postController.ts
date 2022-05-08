@@ -74,18 +74,28 @@ export const deletePost = async (req: Request, res: Response) => {
 export const likeUnlike = async (req: Request, res: Response) => {
   try {
     let post = await Post.findById(req.params.postid)
-    if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
+    if (!post) return res.status(404).json(`Post not found`)
 
+    let user = await User.findById(post.user)
+    if (!user) return res.status(400).json(`user not found`)
+
+    let liker = await User.findById(req.body.userid)
     let message;
+    let notification
+
     if (post.likes.includes(req.body.userid)) {
       post.likes.pull(req.body.userid)
       message = 'disliked'
     } else {
       post.likes.push(req.body.userid)
+      notification = `${liker.username} liked your post!`
+      user.notifications.push(notification)
       message = 'liked'
+    
     }
+    await user.save()
     await post.save()
-    return res.status(200).json({ post, message })
+    return res.status(200).json({ post, message, user })
   } catch (error) {
     res.status(500).send(`Internal server error --Unable to like/unlike post. ${error}`)
   }
