@@ -106,7 +106,7 @@ export const likeUnlikeComment = async (req: Request, res: Response) => {
           from: {
             userid: liker._id,
             username: liker.username,
-            liker
+            user: liker
           },
           notificationType: 'comment_like',
           navToPost: null,

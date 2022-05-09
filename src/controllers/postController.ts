@@ -99,7 +99,7 @@ export const likeUnlike = async (req: Request, res: Response) => {
           from: {
             userid: liker._id,
             username: liker.username,
-            liker
+            user: liker
           },
           notificationType: 'post_like',
           navToPost: `/posts/${post._id}`,
@@ -108,7 +108,7 @@ export const likeUnlike = async (req: Request, res: Response) => {
           commentid: null,
           postid: post._id,
         }
-        
+
         user.notifications.push(notification)
       } else if (user.username === liker.username) {
         post.likes.push(req.body.userid)
