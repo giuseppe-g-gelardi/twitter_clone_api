@@ -93,7 +93,7 @@ export const registerNewUser = async (req: Request, res: Response) => {
       email: req.body.email,
       password: await bcrypt.hash(req.body.password, salt),
     })
-    // const token: string = await user.generateAuthToken(user._id) // ? schema method to generate token
+    // const token: string = await user.generateAuthToken(user._id) // * schema method to generate token
     const response = await axios.post('http://localhost:8080/token', {
       id: user._id
     })

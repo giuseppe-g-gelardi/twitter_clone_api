@@ -53,53 +53,43 @@ export const postNewComment = async (req: Request, res: Response) => {
 
 export const likeUnlikeComment = async (req: Request, res: Response) => {
   try {
-    // const user = await User.find({ username: req.params.username })
-    // if (!user) return res.status(404).json(`User ${req.params.username} does not exist`)
-
-    // let post = await Post.findById(req.params.postid)
-    // if (!post) return res.status(404).json(`Post with id: ${req.params.postid} does not exist`)
 
     let comment = await Comment.findById(req.params.commentid)
     if (!comment) return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`)
 
+    let user = await User.findById(comment.user)
+    if (!user) return res.status(400).json('user not found')
 
-    // let post = await Post.findById(req.params.postid)
-    // if (!post) return res.status(404).json(`Post not found`)
-
-    // let user = await User.findById(post.user)
-    // if (!user) return res.status(400).json(`user not found`)
-
-    // let liker = await User.findById(req.body.userid)
-    // let message;
-    // let notification
-
-    let message: string;
+    let liker = await User.findById(req.body.userid)
+    let message;
     let notification;
+
     if (comment.likes.includes(req.body.userid)) {
       comment.likes.pull(req.body.userid)
       message = 'disliked'
     } else {
-      comment.likes.push(req.body.userid)
-      message = 'liked'
+      if (user.username !== liker.username) {
+        comment.likes.push(req.body.userid)
+        message = 'liked'
+
+        notification = {
+          to: user._id,
+          from: liker._id,
+          notificationType: 'comment_like',
+          message: `${liker.username} liked your comment!`,
+          comment: comment._id
+        }
+
+        user.notifications.push(notification)
+      } else if (user.username === liker.username) {
+        comment.likes.push(req.body.userid)
+        message = 'liked'
+      }
     }
 
-
-    // if (user.username !== liker.username) {
-    //   post.likes.push(req.body.userid)
-    //   message = 'liked'
-    //   notification = `${liker.username} liked your post!`
-    //   user.notifications.push(notification)
-    // } else if (user.username === liker.username) {
-    //   post.likes.push(req.body.userid)
-    //   message = 'liked'
-    // }
-
-
-
-
-
+    await user.save()
     await comment.save()
-    return res.status(200).json({ comment, message })
+    return res.status(200).json({ comment, message, notification })
 
   } catch (error) {
     return res.status(500).json(`Internal server error: ${error}`)
@@ -206,9 +196,3 @@ export const getAllReplies = async (req: Request, res: Response) => {
     }
   }
   
-  
-  // ! implement to populate reply details
-  // const posts = await Post.find().populate({
-  //   path: 'user',
-  //   select: 'username isVerified profilePicture',
-  // })
