@@ -12,6 +12,7 @@ import {
   updateUser,
   uploadProfileBanner,
   clearNotifications,
+  clearNotificationsById,
 } from '../controllers/userController'
 const router = express.Router()
 
@@ -24,6 +25,7 @@ router.put('/:username/update', uploadProfilePicture)
 router.put('/:username/updatebanner', uploadProfileBanner)
 router.put('/:username/updateuser', updateUser)
 router.put('/:username/notifications/clear', clearNotifications)
+router.put('/notifications/:userid/clear', clearNotificationsById)
 router.post('/new', registerNewUser)
 router.post('/login', login)
 router.delete('/id/:userid', deleteUser)
