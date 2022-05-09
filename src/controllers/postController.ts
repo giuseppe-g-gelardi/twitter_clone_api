@@ -101,7 +101,10 @@ export const likeUnlike = async (req: Request, res: Response) => {
             username: liker.username,
             user: liker
           },
-          notificationType: 'post_like',
+          action: {
+            actionType: 'liked',
+            actionOn: 'post'
+          },
           navToPost: `/posts/${post._id}`,
           navToUser: `/${liker.username}`,
           message: `${liker.username} liked your post!`,
