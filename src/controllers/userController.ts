@@ -108,7 +108,7 @@ export const registerNewUser = async (req: Request, res: Response) => {
   }
 }
 
-// TODO: push notification when following
+// TODO: set up notifications!
 export const followAndUnfollowUsers = async (req: Request, res: Response) => {
   if (req.body.username !== req.params.username) {
     try {
