@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import Comment from '../models/commentModel'
 import Post from '../models/postModel'
-import User from '../models/userModel'
+import User, { Users } from '../models/userModel'
 
 export const getAllComments = async (_req: Request, res: Response) => {
   try {
@@ -30,20 +30,35 @@ export const postNewComment = async (req: Request, res: Response) => {
     const post = await Post.findOne({_id: req.params.postid})
     if (!post) return res.status(404).json(`Post: ${req.params.postid} not found`)
 
-    const user = await User.findOne({ username: req.params.username})
+    const postUser: Users | null = await User.findByIdAndUpdate(post.user)
+
+    const user: Users | null = await User.findOne({ username: req.params.username})
     if (!user) return res.status(404).json(`User: ${user} not found`)
+
+    let notification;
 
     const comment = new Comment({
       body: req.body.body,
       user: user._id,
       username: user.username
     })
-    await comment.save()
 
-    post.comments.push(comment)
-    // post.comments.push(comment._id)
-    await post.save()
-    // await user.save()
+    notification = {
+      to: postUser?._id,
+      from: user._id,
+      notificationType: 'comment_like',
+      message: `${user.username} liked your comment!`,
+      comment: comment._id
+    }
+
+      post.comments.push(comment)
+      await comment.save()
+      await post.save()
+
+      if (JSON.stringify(user._id) !== JSON.stringify(postUser?._id)) {
+        postUser?.notifications?.push(notification)
+        await postUser?.save()
+      }
 
     return res.json(comment)
   } catch (error: any) {

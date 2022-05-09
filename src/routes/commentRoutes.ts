@@ -13,7 +13,7 @@ const router = express.Router()
 
 router.get('/:commentid', getComment)
 router.get('/:username/:postid/all', getAllComments)
-router.post('/:username/:postid/new', postNewComment)
+router.put('/:username/:postid/new', postNewComment)
 router.put('/:commentid/likes', likeUnlikeComment)
 router.get('/:username/:postid/comments/:commentid/likes', getCommentLikes)
 router.get('/:username/:postid/comments/:commentid', getSingleComment)
