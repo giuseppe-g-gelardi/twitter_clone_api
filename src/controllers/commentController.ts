@@ -7,7 +7,7 @@ export const getAllComments = async (_req: Request, res: Response) => {
   try {
     const comments = await Comment.find()
     if (!comments) return res.status(404).json('No comments to show?')
-    
+
     return res.json(comments)
   } catch (error: any) {
     return res.status(500).json(`Internal server error: ${error?.message}`)
@@ -27,12 +27,13 @@ export const getComment = async (req: Request, res: Response) => {
 
 export const postNewComment = async (req: Request, res: Response) => {
   try {
-    const post = await Post.findOne({_id: req.params.postid})
+    const post = await Post.findOne({ _id: req.params.postid })
     if (!post) return res.status(404).json(`Post: ${req.params.postid} not found`)
 
     const postUser: Users | null = await User.findByIdAndUpdate(post.user)
+    if (!postUser) return res.status(400).json('user not found')
 
-    const user: Users | null = await User.findOne({ username: req.params.username})
+    const user: Users | null = await User.findOne({ username: req.params.username })
     if (!user) return res.status(404).json(`User: ${user} not found`)
 
     let notification;
@@ -51,14 +52,14 @@ export const postNewComment = async (req: Request, res: Response) => {
       comment: comment._id
     }
 
-      post.comments.push(comment)
-      await comment.save()
-      await post.save()
+    post.comments.push(comment)
+    await comment.save()
+    await post.save()
 
-      if (JSON.stringify(user._id) !== JSON.stringify(postUser?._id)) {
-        postUser?.notifications?.push(notification)
-        await postUser?.save()
-      }
+    if (JSON.stringify(user._id) !== JSON.stringify(postUser?._id)) {
+      postUser?.notifications?.push(notification)
+      await postUser?.save()
+    }
 
     return res.json(comment)
   } catch (error: any) {
@@ -176,7 +177,7 @@ export const reply = async (req: Request, res: Response) => {
     replies.push(newReply._id)
     await parentComment.save()
 
-    return res.json({parentComment, newReply})
+    return res.json({ parentComment, newReply })
   } catch (error) {
     return res.status(500).json(`Internal server error: ${error}`)
   }
@@ -192,22 +193,22 @@ export const getAllReplies = async (req: Request, res: Response) => {
 
     let comment = await Comment.findById(req.params.commentid)
     if (!comment) return res.status(404).json(`comment with id: ${req.params.commentid} does not exist`)
-    
+
     const replies = await comment.replies
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       parentComment: {
         id: comment._id,
         body: comment.body,
         userid: comment.user,
         username: comment.username
-      }, 
-      replies 
+      },
+      replies
     })
-      
-      
-    } catch (error) {
-      return res.status(500).json(`Internal server error: ${error}`)
-    }
+
+
+  } catch (error) {
+    return res.status(500).json(`Internal server error: ${error}`)
   }
-  
+}
+
