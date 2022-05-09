@@ -200,6 +200,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
 // ! this only seems to work for one user, not sure why. the following 
 // ! works by id and seems to work with other users.
+// TODO: FIND OUT WHY THE SERVER CRASHES IF I DELETE THIS!?@#?!
 export const clearNotifications = async (req: Request, res: Response) => {
   try {
     const user: Users | null = await User.findOneAndUpdate({ username: req.params.username })
@@ -217,13 +218,12 @@ export const clearNotifications = async (req: Request, res: Response) => {
   }
 }
 
+// http://localhost:8000/api/users/notifications/${userid}/clear
 export const clearNotificationsById = async (req: Request, res: Response) => {
   try {
 
     let user = await User.findByIdAndUpdate(req.params.userid)
     if (!user) return res.status(400).json('user not found')
-
-    console.log(user.username)
 
     let notifications: any = user.notifications
     notifications.splice(0, notifications.length)
@@ -231,7 +231,6 @@ export const clearNotificationsById = async (req: Request, res: Response) => {
     await user.save()
 
     return res.status(200).json('notifications cleared!')
-    
   } catch (error) {
     return res.status(500).json(error)
   }

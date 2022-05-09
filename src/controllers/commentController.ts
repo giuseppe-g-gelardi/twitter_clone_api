@@ -48,8 +48,8 @@ export const postNewComment = async (req: Request, res: Response) => {
       to: postUser?._id,
       from: user._id,
       notificationType: 'comment_like',
-      message: `${user.username} liked your comment!`,
-      comment: comment._id
+      message: `${user.username} commented on your post!`,
+      link: comment._id
     }
 
     post.comments.push(comment)
@@ -93,7 +93,7 @@ export const likeUnlikeComment = async (req: Request, res: Response) => {
           from: liker._id,
           notificationType: 'comment_like',
           message: `${liker.username} liked your comment!`,
-          comment: comment._id
+          link: comment._id
         }
 
         user.notifications.push(notification)
