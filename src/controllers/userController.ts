@@ -10,6 +10,8 @@ import axios from 'axios'
 export const getAllUsers = async (_req: Request, res: Response) => {
   try {
     const users: Users[] = await User.find()
+    if (!users) return res.status(400).json('No users found')
+
     return res.json(users)
   } catch (error: any) {
     return res.status(500).json([error.message, 'Internal server error.'])
@@ -30,7 +32,7 @@ export const userSearch = async (_req: Request, res: Response) => {
 export const findByUsername = async (req: Request, res: Response) => {
   try {
     const user: Users | null = await User.findOne({ username: req.params.username })
-    if (!user) return res.status(404).json(`User: ${user} not found`)
+    if (!user) return res.status(400).json(`User not found`)
 
     return res.status(200).json(user)
   } catch (error) {
@@ -41,7 +43,7 @@ export const findByUsername = async (req: Request, res: Response) => {
 export const findUserById = async (req: Request, res: Response) => {
   try {
     const user: Users | null = await User.findById(req.params.userid)
-    if (!user) return res.status(404).json(`User id: ${req.params.userid} not found`)
+    if (!user) return res.status(400).json(`User id not found`)
 
     return res.status(200).json(user)
   } catch (error) {
@@ -52,7 +54,7 @@ export const findUserById = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const user: Users | null = await User.findByIdAndRemove(req.params.userid)
-    if (!user) return res.status(404).json(`User with id: ${req.params.userid} not found`)
+    if (!user) return res.status(400).json(`User with id not found`)
 
     return res.status(200).json(`Deleted user: ${user.username}`)
   } catch (error) {
@@ -71,11 +73,11 @@ export const login = async (req: Request, res: Response) => {
     );
     if (!validPassword) return res.status(400).json("Invalid email or password.");
 
-    // const token: string = user.generateAuthToken() // ? schema method to generate token
-    const response = await axios.post('http://localhost:8080/token', {
-      id: user._id
-    })
-    const token = response.data
+    // const token: string = user.generateAuthToken() // ! schema method to generate token
+    // const response = await axios.post('http://localhost:8080/token', { // ! external server to generate token
+    //   id: user._id
+    // })
+    // const token = response.data
     return res.status(200).json(user);
   } catch (error) {
     return res.status(500).json({ message: 'internal server error' })
@@ -84,8 +86,8 @@ export const login = async (req: Request, res: Response) => {
 
 export const registerNewUser = async (req: Request, res: Response) => {
   try {
-    const userExists: Users | null = await User.findOne({ email: req.body.email })
-    if (userExists) return res.status(404).json('User already registered')
+    const existingUser: Users | null = await User.findOne({ email: req.body.email })
+    if (existingUser) return res.status(404).json(`User with email ${req.body.email} already registered`)
 
     const salt: string = await bcrypt.genSalt(10)
     const user: Users = await User.create({
@@ -104,7 +106,7 @@ export const registerNewUser = async (req: Request, res: Response) => {
       .json(user);
     // .json({ _id: user._id, username: user.username, email: user.email, token });
   } catch (error) {
-    return res.status(500).json([error, 'something'])
+    return res.status(500).json(error)
   }
 }
 
@@ -113,10 +115,10 @@ export const followAndUnfollowUsers = async (req: Request, res: Response) => {
   if (req.body.username !== req.params.username) {
     try {
       const user: Users | null = await User.findOne({ username: req.params.username })
-      if (!user) return res.status(404).json({ message: `ERR! User ${req.params.username} not found.` })
+      if (!user) return res.status(400).json({ message: `ERR! User ${req.params.username} not found.` })
 
       const currentUser: Users | null = await User.findOne({ username: req.body.username })
-      if (!currentUser) return res.status(404).json({ message: `ERRRR! User [logged in user] ${req.body.username} not found.` })
+      if (!currentUser) return res.status(400).json({ message: `ERRRR! User [logged in user] ${req.body.username} not found.` })
 
       let message;
       if (user?.followers?.includes(req.body.username)) {
@@ -131,11 +133,11 @@ export const followAndUnfollowUsers = async (req: Request, res: Response) => {
       await user?.save()
       await currentUser?.save()
       return res.status(200).json(message)
-    } catch (error: any) {
-      res.status(500).json(error.message)
+    } catch (error) {
+      res.status(500).json(error)
     }
   } else {
-    res.status(403).json('this is the else block')
+    res.status(403).json('You cant follow yourself!')
   }
 }
 
@@ -186,11 +188,10 @@ export const uploadProfilePicture = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-
     const user: Users | null = await User.findOneAndUpdate({ username: req.params.username }, {
       $set: req.body,
     })
-    if (!user) return res.status(404).json('user not found')
+    if (!user) return res.status(400).json('user not found')
 
     res.status(200).json('Account has been updated!')
   } catch (err) {
@@ -198,30 +199,9 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 }
 
-// ! this only seems to work for one user, not sure why. the following 
-// ! works by id and seems to work with other users.
-// TODO: FIND OUT WHY THE SERVER CRASHES IF I DELETE THIS!?@#?!
-export const clearNotifications = async (req: Request, res: Response) => {
-  try {
-    const user: Users | null = await User.findOneAndUpdate({ username: req.params.username })
-    if (!user) return res.status(400).json('unable to find user')
-
-    console.log(user.username)
-
-    let notifications: any = user.notifications
-    notifications.splice(0, notifications.length)
-
-    await user.save()
-    return res.status(200).json('notifications cleared!')
-  } catch (error) {
-    return res.status(500).json(error)
-  }
-}
-
 // http://localhost:8000/api/users/notifications/${userid}/clear
 export const clearNotificationsById = async (req: Request, res: Response) => {
   try {
-
     let user = await User.findByIdAndUpdate(req.params.userid)
     if (!user) return res.status(400).json('user not found')
 
@@ -229,7 +209,6 @@ export const clearNotificationsById = async (req: Request, res: Response) => {
     notifications.splice(0, notifications.length)
 
     await user.save()
-
     return res.status(200).json('notifications cleared!')
   } catch (error) {
     return res.status(500).json(error)

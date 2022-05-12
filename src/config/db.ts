@@ -1,6 +1,6 @@
 import mongoose, { ConnectOptions } from 'mongoose'
 import dotenv from 'dotenv'
-import dbLogDecoration from '../util/dbLogDecoration'
+import dbLogDecoration from '../util/dbConnectionMessage'
 
 dotenv.config()
 
@@ -12,7 +12,7 @@ export async function connectDB(): Promise<void> {
     } as ConnectOptions)
     dbLogDecoration(connect.connection.host)
   } catch (error) {
-    console.log(error)
+    console.error(error)
     process.exit(1)
   }
 }

@@ -5,7 +5,7 @@ import User, { Users } from '../models/userModel'
 export const getAllPosts = async (_req: Request, res: Response) => {
   try {
     const posts: Posts[] = await Post.find()
-    if (!posts) return res.status(404).json('no posts found')
+    if (!posts) return res.status(400).json('no posts found')
 
     return res.status(200).json(posts)
   } catch (error) {
@@ -19,7 +19,7 @@ export const getUserPosts = async (req: Request, res: Response) => {
       path: 'user',
       // select: 'username isVerified profilePicture',
     })
-    const user: Users | null = await User.findOne({ username: req.params.username})
+    // const user: Users | null = await User.findOne({ username: req.params.username}) // not needed? probably not...
     const userposts = posts.filter(post => post.user.username === req.params.username)
     return res.status(200).json(userposts)
   } catch (error) {
@@ -28,7 +28,7 @@ export const getUserPosts = async (req: Request, res: Response) => {
 }
 export const getSinglePost = async (req: Request, res: Response) => {
   try {
-    const post: Posts | null = await Post.findOne({ _id: req.params.postid})
+    const post: Posts | null = await Post.findOne({ _id: req.params.postid })
     if (!post) return res.status(500).json(`Post ${req.params.postid} not found`)
 
     return res.status(200).json(post)
@@ -36,7 +36,6 @@ export const getSinglePost = async (req: Request, res: Response) => {
     return res.status(500).json(`Internal server error: ${error}`)
   }
 }
-
 
 export const newPost = async (req: Request, res: Response) => {
   try {
@@ -55,7 +54,7 @@ export const newPost = async (req: Request, res: Response) => {
 
     return res.status(200).json(post)
   } catch (error) {
-    res.status(500).json(`Internal server error?? ${error}`)
+    res.status(500).json(`Internal server error: ${error}`)
     
   }
 }
@@ -126,18 +125,15 @@ export const likeUnlike = async (req: Request, res: Response) => {
   }
 }
 
-export const getPostLikes = async (req: Request, res: Response) => {
+export const viewCount = async (req: Request, res: Response) => {
   try {
-    const post = await Post.findOne({ _id: req.params.postid })
-    if (!post) return res.status(404).json(`Post with id: ${req.params.postid} not found`)
+    const post: Posts | null = await Post.findOneAndUpdate({ _id: req.params.postid }, {
+      $inc: { views: 1 }
+    })
+    if (!post) return res.status(400).json('Post not found')
 
-    let likes = post.likes
-    if (!likes) return res.json(`Post ${post} has no likes`)
-
-    return res.status(200).json(likes)
+    return res.status(200).json('views increased')
   } catch (error) {
-    return res.status(500).json(`unable to find likes... ${error}`)
+    return res.status(500).json(`Internal server error: ${error}`)
   }
 }
-
-
