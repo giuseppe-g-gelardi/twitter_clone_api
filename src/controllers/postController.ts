@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import Post, { Posts } from '../models/postModel'
-import User, { Users } from '../models/userModel'
+import User from '../models/userModel'
 
 export const getAllPosts = async (_req: Request, res: Response) => {
   try {
@@ -73,7 +73,7 @@ export const deletePost = async (req: Request, res: Response) => {
 export const likeUnlike = async (req: Request, res: Response) => {
   try {
     let post = await Post.findById(req.params.postid)
-    if (!post) return res.status(404).json(`Post not found`)
+    if (!post) return res.status(400).json(`Post not found`)
 
     let user = await User.findById(post.user)
     if (!user) return res.status(400).json(`user not found`)

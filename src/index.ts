@@ -26,6 +26,7 @@ app.use(morgan('tiny'))
 
 app.use('/api/users/', require('./routes/userRoutes'))
 app.use('/api/posts/', require('./routes/postRoutes'))
-app.use('/api/comments', require('./routes/commentRoutes'))
+app.use('/api/comments/', require('./routes/commentRoutes'))
+app.use('/api/replies/', require('./routes/replyRoutes'))
 
 app.listen(port, () => connectMessage(port))

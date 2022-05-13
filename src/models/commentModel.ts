@@ -5,8 +5,7 @@ export const commentSchema: Schema = new mongoose.Schema({
   username: { type: String, default: null },
   body: { type: String, maxlength: 500, required: true },
   likes: { type: [ mongoose.Types.ObjectId ], default: [] },
-  parent: { type: mongoose.Types.ObjectId, ref: 'Comment', default: null },
-  replies: { type: [ mongoose.Types.ObjectId ], ref: 'Comment', default: []},
+  replies: { type: [ mongoose.Types.ObjectId ], ref: 'Reply', default: []},
   createdAt: { type: String },
   updatedAt: { type: String }
 }, { timestamps: true })
@@ -16,7 +15,6 @@ export interface Comments {
   username: string,
   body: string,
   likes?: string[],
-  parent?: Comment,
   replies?: Comment[]
 }
 
