@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
+import Comment from '../models/commentModel'
 import Reply, { Replies } from '../models/replyModel'
-import User from '../models/userModel'
+import User, { Users } from '../models/userModel'
 
 export const getAllReplies = async (req: Request, res: Response) => {
   try {
@@ -25,16 +26,71 @@ export const getSingleReply = async (req: Request, res: Response) => {
   }
 }
 
+export const getCommentReplies = async (req: Request, res: Response) => {
+  try {
+    
+    const replies = await Comment.findById({ _id: req.params.commentid }).populate({
+      path: 'replies'
+    })
+
+    return res.status(200).json(replies)
+
+  } catch (error) {
+    return res.status(500).json('trouble fetching this comment')
+  }
+}
+
 export const newReply = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.body.user)
+
+    const comment = await Comment.findOne({ _id : req.params.commentid })
+    if (!comment) return res.status(400).json('comment not found')
+
+
+    const commentUser: Users | null = await User.findByIdAndUpdate(comment.user)
+    if (!commentUser) return res.status(400).json('comment user not found')
+
+    const user: Users | null = await User.findById(req.body.user)
     if (!user) return res.status(400).json('user not found')
 
-    const reply: Replies[] = await Reply.create({
+    let notification;
+
+    const reply = new Reply({
       user: req.body.user,
       body: req.body.body,
       comment: req.params.commentid
     })
+
+    // notification = {
+    //   to: {
+    //     userid: postUser?._id,
+    //     username: postUser?.username,
+    //   },
+    //   from: {
+    //     userid: user._id,
+    //     username: user.username,
+    //     user
+    //   },
+    //   action: {
+    //     actionType: 'commented',
+    //     actionOn: 'post'
+    //   },
+    //   navToPost: `/posts/${post._id}`,
+    //   navToUser: `/${user.username}`,
+    //   message: `${user.username} commented on your post!`,
+    //   commentid: comment._id,
+    //   postid: post._id,
+    // }
+
+    comment.replies.push(reply)
+    await reply.save()
+    await comment.save()
+
+    if (JSON.stringify(user._id) !== JSON.stringify(commentUser?._id)) {
+      commentUser?.notifications?.push(notification)
+      await commentUser?.save()
+    }
+
 
     return res.status(200).json(reply)
 
@@ -117,3 +173,20 @@ export const likeUnlikeReply = async (req: Request, res: Response) => {
   }
 }
 
+// export const newReply = async (req: Request, res: Response) => {
+//   try {
+//     const user = await User.findById(req.body.user)
+//     if (!user) return res.status(400).json('user not found')
+
+//     const reply: Replies[] = await Reply.create({
+//       user: req.body.user,
+//       body: req.body.body,
+//       comment: req.params.commentid
+//     })
+
+//     return res.status(200).json(reply)
+
+//   } catch (error) {
+//     return res.status(500).json(error)
+//   }
+// }

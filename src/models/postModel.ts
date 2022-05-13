@@ -9,6 +9,8 @@ export const postSchema: Schema = new mongoose.Schema({
   likes: { type: [ mongoose.Types.ObjectId ], default: [] },
   views: { type: Number, default: 0 },
   comments: [{ type: [ mongoose.Types.ObjectId ], ref: 'Comment', default: [] }],
+  createdAt: { type: String },
+  updatedAt: { type: String }
 }, { timestamps: true })
 
 export interface Posts {

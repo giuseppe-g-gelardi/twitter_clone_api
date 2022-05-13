@@ -75,7 +75,7 @@ export const postNewComment = async (req: Request, res: Response) => {
       await postUser?.save()
     }
 
-    return res.json(comment)
+    return res.status(200).json(comment)
   } catch (error) {
     return res.status(500).json(`Internal server error: ${error}`)
   }

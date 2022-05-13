@@ -26,6 +26,7 @@ export const getUserPosts = async (req: Request, res: Response) => {
     return res.status(500).json('Trouble fetching user posts')
   }
 }
+
 export const getSinglePost = async (req: Request, res: Response) => {
   try {
     const post: Posts | null = await Post.findOne({ _id: req.params.postid })
