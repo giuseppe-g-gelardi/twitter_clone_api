@@ -30,6 +30,7 @@ userSchema.methods.generateAuthToken = function(): string {
 }
 
 export interface Users extends mongoose.Document {
+  _doc: any
   _id: string
   username: string
   email: string
@@ -50,7 +51,7 @@ export interface Users extends mongoose.Document {
   theme?: string // could be boolean actually // prefersDark: t / f
   createdAt?: string
   updatedAt?: string
-  generateAuthToken: Function
+  // generateAuthToken: Function
 }
 
 const User = mongoose.model("User", userSchema)

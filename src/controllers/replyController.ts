@@ -61,6 +61,8 @@ export const newReply = async (req: Request, res: Response) => {
       comment: req.params.commentid
     })
 
+    // TODO: update this. properly get User, adjust notifications
+
     // notification = {
     //   to: {
     //     userid: postUser?._id,
@@ -82,7 +84,7 @@ export const newReply = async (req: Request, res: Response) => {
     //   postid: post._id,
     // }
 
-    comment.replies.push(reply)
+    // comment.replies.push(reply)
     await reply.save()
     await comment.save()
 
@@ -124,6 +126,20 @@ export const likeUnlikeReply = async (req: Request, res: Response) => {
 
 
     let liker = await User.findById(req.body.userid)
+    const { 
+      password, 
+      updatedAt, 
+      notifications, 
+      bio,
+      location,
+      followers,
+      following,
+      posts,
+      theme,
+      ...other 
+    } = liker?._doc
+
+    if (!liker) return res.status(400).json('liker not found')
     let message;
     let notification;
 
@@ -144,7 +160,7 @@ export const likeUnlikeReply = async (req: Request, res: Response) => {
           from: {
             userid: liker._id,
             username: liker.username,
-            // user: liker
+            user: other
           },
           action: {
             actionType: 'liked',
@@ -164,7 +180,6 @@ export const likeUnlikeReply = async (req: Request, res: Response) => {
       }
     }
 
-    console.log(notification)
     await user.save()
     await reply.save()
     return res.status(200).json({ reply, message, notification })

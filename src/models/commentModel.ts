@@ -12,7 +12,7 @@ export const commentSchema: Schema = new mongoose.Schema({
   updatedAt: { type: String }
 }, { timestamps: true })
 
-export interface Comments {
+export interface Comments extends mongoose.Document {
   user: string,
   username: string,
   body: string,

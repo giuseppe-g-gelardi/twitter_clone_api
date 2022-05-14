@@ -19,6 +19,7 @@ export const getUserPosts = async (req: Request, res: Response) => {
       path: 'user',
       // select: 'username isVerified profilePicture',
     })
+    // ! update this to prevent over fetching
     // const user: Users | null = await User.findOne({ username: req.params.username}) // not needed? probably not...
     const userposts = posts.filter(post => post.user.username === req.params.username)
     return res.status(200).json(userposts)
@@ -80,6 +81,21 @@ export const likeUnlike = async (req: Request, res: Response) => {
     if (!user) return res.status(400).json(`user not found`)
 
     let liker = await User.findById(req.body.userid)
+    const { 
+      password, 
+      updatedAt, 
+      notifications, 
+      bio,
+      location,
+      followers,
+      following,
+      posts,
+      theme,
+      ...other 
+    } = liker?._doc
+    if (!liker) return res.status(400).json('user not found')
+
+
     let message;
     let notification
 
@@ -99,7 +115,7 @@ export const likeUnlike = async (req: Request, res: Response) => {
           from: {
             userid: liker._id,
             username: liker.username,
-            user: liker
+            user: other
           },
           action: {
             actionType: 'liked',

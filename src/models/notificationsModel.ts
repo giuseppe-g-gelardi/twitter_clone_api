@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
-import type { Users } from './userModel'
+import { Users } from './userModel'
 
 export const notificationSchema: Schema = new mongoose.Schema({
   to: { 
@@ -25,7 +25,7 @@ export const notificationSchema: Schema = new mongoose.Schema({
   updatedAt: { type: String }
 }, { timestamps: true })
 
-export interface NotificationType {
+export interface NotificationType extends mongoose.Document {
   _id: string
   to: {
     userid: string,

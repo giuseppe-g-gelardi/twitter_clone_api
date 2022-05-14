@@ -10,7 +10,7 @@ export const replySchema: Schema = new mongoose.Schema({
   updatedAt: { type: String }
 }, { timestamps: true })
 
-export interface Replies {
+export interface Replies extends mongoose.Document {
   user: string,
   username: string,
   body: string,

@@ -34,8 +34,21 @@ export const postNewComment = async (req: Request, res: Response) => {
     const postUser: Users | null = await User.findByIdAndUpdate(post.user)
     if (!postUser) return res.status(400).json('User not found')
 
-    const user: Users | null = await User.findOne({ username: req.params.username })
-    if (!user) return res.status(400).json(`User not found`)
+    const fromUser: Users | null = await User.findOne({ username: req.params.username })
+    const { 
+      password, 
+      updatedAt, 
+      notifications, 
+      bio,
+      location,
+      followers,
+      following,
+      posts,
+      theme,
+      ...user 
+    } = fromUser?._doc
+
+    if (!fromUser) return res.status(400).json(`User not found`)
 
     let notification;
 
@@ -70,12 +83,13 @@ export const postNewComment = async (req: Request, res: Response) => {
     await comment.save()
     await post.save()
 
+
     if (JSON.stringify(user._id) !== JSON.stringify(postUser?._id)) {
       postUser?.notifications?.push(notification)
       await postUser?.save()
     }
 
-    return res.status(200).json(comment)
+    return res.status(200).json({comment, notification})
   } catch (error) {
     return res.status(500).json(`Internal server error: ${error}`)
   }
@@ -91,6 +105,22 @@ export const likeUnlikeComment = async (req: Request, res: Response) => {
     if (!user) return res.status(400).json('user not found')
 
     let liker = await User.findById(req.body.userid)
+    const { 
+      password, 
+      updatedAt, 
+      notifications, 
+      bio,
+      location,
+      followers,
+      following,
+      posts,
+      theme,
+      ...other 
+    } = liker?._doc
+
+    if (!liker) return res.status(400).json('liker not found')
+
+
     let message;
     let notification;
 
@@ -110,7 +140,7 @@ export const likeUnlikeComment = async (req: Request, res: Response) => {
           from: {
             userid: liker._id,
             username: liker.username,
-            user: liker
+            user: other
           },
           action: {
             actionType: 'liked',

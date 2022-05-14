@@ -13,7 +13,7 @@ export const postSchema: Schema = new mongoose.Schema({
   updatedAt: { type: String }
 }, { timestamps: true })
 
-export interface Posts {
+export interface Posts extends mongoose.Document {
   user: Users
   username: string
   body: string
