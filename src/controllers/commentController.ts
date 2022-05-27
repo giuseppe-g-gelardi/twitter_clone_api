@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import Comment from '../models/commentModel'
 import Post from '../models/postModel'
+import Reply from '../models/replyModel'
 import User, { Users } from '../models/userModel'
 
 export const getAllComments = async (_req: Request, res: Response) => {

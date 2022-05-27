@@ -50,14 +50,27 @@ export const newReply = async (req: Request, res: Response) => {
     const commentUser: Users | null = await User.findByIdAndUpdate(comment.user)
     if (!commentUser) return res.status(400).json('comment user not found')
 
-    const user: Users | null = await User.findById(req.body.user)
-    if (!user) return res.status(400).json('user not found')
+    const fromUser: Users | null = await User.findById(req.body.user)
+    const {
+      password,
+      updatedAt,
+      notifications,
+      bio,
+      location,
+      followers,
+      following,
+      posts,
+      theme,
+      ...user
+    } = fromUser?._doc
+    if (!fromUser) return res.status(400).json('user not found')
 
-    let notification;
+    // let notification;
 
     const reply = new Reply({
-      user: req.body.user,
       body: req.body.body,
+      user: req.body.user,
+      // user: user._id,
       comment: req.params.commentid
     })
 
@@ -84,18 +97,17 @@ export const newReply = async (req: Request, res: Response) => {
     //   postid: post._id,
     // }
 
-    // comment.replies.push(reply)
+    comment.replies.push(reply)
     await reply.save()
     await comment.save()
 
-    if (JSON.stringify(user._id) !== JSON.stringify(commentUser?._id)) {
-      commentUser?.notifications?.push(notification)
-      await commentUser?.save()
-    }
+    // if (JSON.stringify(user._id) !== JSON.stringify(commentUser?._id)) {
+    //   commentUser?.notifications?.push(notification)
+    //   await commentUser?.save()
+    // }
 
 
-    return res.status(200).json(reply)
-
+    return res.status(200).json({reply, user})
   } catch (error) {
     return res.status(500).json(error)
   }
