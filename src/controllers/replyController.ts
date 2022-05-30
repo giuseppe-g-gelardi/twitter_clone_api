@@ -26,15 +26,70 @@ export const getSingleReply = async (req: Request, res: Response) => {
   }
 }
 
+export const getSingleReplyWithUser = async (req: Request, res: Response) => {
+  try {
+
+    const reply: Replies | null = await Reply.findById(req.params.id)
+    if (!reply) return res.status(400).json('unable to find reply')
+
+    let other = await User.findById(reply.user)
+    // const user = await User.findById(reply.user)
+    // const {
+    //   password,
+    //   updatedAt,
+    //   notifications,
+    //   bio,
+    //   location,
+    //   followers,
+    //   following,
+    //   posts,
+    //   theme,
+    //   email,
+    //   _id,
+    //   ...other
+    // } = user?._doc
+    // if (!user) return res.status(400).json('unable to find user')
+
+    return res.status(200).json({reply, other})
+  } catch (error) {
+    return res.status(500).json(error)
+  }
+}
+
 export const getCommentReplies = async (req: Request, res: Response) => {
   try {
+    // const replies = await Comment.findById({ _id: req.params.commentid }).populate({
+    //   path: 'replies'
+    // })
+
+    const comment = await Comment.findOne({ _id: req.params.commentid })
+    if (!comment) return res.status(400).json('Unable to find comment')
+
+    let replyObjects = comment.replies
+
+    let data: any = []
+
+    for (let replies of replyObjects) {
+      let reply = await Reply.findOne(replies)
+      let replyUser = await User.findOne(reply.user)
+      const {
+        password,
+        updatedAt,
+        notifications,
+        bio,
+        location,
+        followers,
+        following,
+        posts,
+        theme,
+        email,
+        _id,
+        ...user
+      } = replyUser?._doc
+      data.push({ reply, user })
+    }
     
-    const replies = await Comment.findById({ _id: req.params.commentid }).populate({
-      path: 'replies'
-    })
-
-    return res.status(200).json(replies)
-
+    return res.status(200).json(data)
   } catch (error) {
     return res.status(500).json('trouble fetching this comment')
   }
@@ -61,6 +116,8 @@ export const newReply = async (req: Request, res: Response) => {
       following,
       posts,
       theme,
+      email,
+      _id,
       ...user
     } = fromUser?._doc
     if (!fromUser) return res.status(400).json('user not found')
@@ -70,9 +127,11 @@ export const newReply = async (req: Request, res: Response) => {
     const reply = new Reply({
       body: req.body.body,
       user: req.body.user,
+      comment: req.body.comment
       // user: user._id,
-      comment: req.params.commentid
+      // comment: req.params.commentid
     })
+
 
     // TODO: update this. properly get User, adjust notifications
 
