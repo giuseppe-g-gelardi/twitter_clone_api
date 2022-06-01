@@ -3,7 +3,7 @@ import {
   deleteReply, 
   getAllReplies,
   getCommentReplies,
-  getSingleReply, 
+  // getSingleReply, 
   likeUnlikeReply, 
   newReply,
   getSingleReplyWithUser
