@@ -212,7 +212,7 @@ export const likeUnlikeReply = async (req: Request, res: Response) => {
 
     if (!liker) return res.status(400).json('liker not found')
     let message;
-    let notification;
+    // let notification;
 
 
     if (reply.likes.includes(req.body.userid)) {
@@ -223,28 +223,28 @@ export const likeUnlikeReply = async (req: Request, res: Response) => {
         reply.likes.push(req.body.userid)
         message = 'liked'
 
-        notification = {
-          to: {
-            userid: user._id,
-            username: user.username
-          },
-          from: {
-            userid: liker._id,
-            username: liker.username,
-            user: other
-          },
-          action: {
-            actionType: 'liked',
-            actionOn: 'reply'
-          },
-          navToPost: `/replies/${reply._id}`,
-          navToUser: `/${liker.username}`,
-          message: `${liker.username} liked your post!`,
-          commentid: reply.comment._id,
-          postid: null,
-        }
+        // notification = {
+        //   to: {
+        //     userid: user._id,
+        //     username: user.username
+        //   },
+        //   from: {
+        //     userid: liker._id,
+        //     username: liker.username,
+        //     user: other
+        //   },
+        //   action: {
+        //     actionType: 'liked',
+        //     actionOn: 'reply'
+        //   },
+        //   navToPost: `/replies/${reply._id}`,
+        //   navToUser: `/${liker.username}`,
+        //   message: `${liker.username} liked your post!`,
+        //   commentid: reply.comment._id,
+        //   postid: null,
+        // }
 
-        user.notifications.push(notification)
+        // user.notifications.push(notification)
       } else if (user.username === liker.username) {
         reply.likes.push(req.body.userid)
         message = 'liked'
@@ -253,26 +253,8 @@ export const likeUnlikeReply = async (req: Request, res: Response) => {
 
     await user.save()
     await reply.save()
-    return res.status(200).json({ reply, message, notification })
+    return res.status(200).json({ reply, message })
   } catch (error) {
     return res.status(500).json(error)
   }
 }
-
-// export const newReply = async (req: Request, res: Response) => {
-//   try {
-//     const user = await User.findById(req.body.user)
-//     if (!user) return res.status(400).json('user not found')
-
-//     const reply: Replies[] = await Reply.create({
-//       user: req.body.user,
-//       body: req.body.body,
-//       comment: req.params.commentid
-//     })
-
-//     return res.status(200).json(reply)
-
-//   } catch (error) {
-//     return res.status(500).json(error)
-//   }
-// }
