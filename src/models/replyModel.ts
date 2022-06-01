@@ -15,7 +15,7 @@ export interface Replies extends mongoose.Document {
   // username: string,
   body: string,
   likes?: string[],
-  // comment: Comment
+  comment: Comment
 }
 
 const Reply = mongoose.model("Reply", replySchema)

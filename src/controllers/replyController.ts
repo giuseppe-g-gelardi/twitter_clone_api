@@ -3,6 +3,8 @@ import Comment from '../models/commentModel'
 import Reply, { Replies } from '../models/replyModel'
 import User, { Users } from '../models/userModel'
 
+
+
 export const getAllReplies = async (req: Request, res: Response) => {
   try {
     const replies = await Reply.find().where({ comment: req.params.commentid })
