@@ -73,11 +73,6 @@ export const login = async (req: Request, res: Response) => {
     );
     if (!validPassword) return res.status(400).json("Invalid email or password.");
 
-    // const token: string = user.generateAuthToken() // ! schema method to generate token
-    // const response = await axios.post('http://localhost:8080/token', { // ! external server to generate token
-    //   id: user._id
-    // })
-    // const token = response.data
     return res.status(200).json(user);
   } catch (error) {
     return res.status(500).json({ message: 'internal server error' })
@@ -95,7 +90,6 @@ export const registerNewUser = async (req: Request, res: Response) => {
       email: req.body.email,
       password: await bcrypt.hash(req.body.password, salt),
     })
-    // const token: string = await user.generateAuthToken(user._id) // * schema method to generate token
     const response = await axios.post('http://localhost:8080/token', {
       id: user._id
     })
@@ -104,7 +98,6 @@ export const registerNewUser = async (req: Request, res: Response) => {
       .header('x-auth-token', token)
       .header('access-control-expose-headers', 'x-auth-token')
       .json(user);
-    // .json({ _id: user._id, username: user.username, email: user.email, token });
   } catch (error) {
     return res.status(500).json(error)
   }
@@ -143,7 +136,6 @@ export const followAndUnfollowUsers = async (req: Request, res: Response) => {
 
 export const uploadProfileBanner = async (req: Request, res: Response) => {
   try {
-
     let user = await User.findOne({ username: req.params.username })
     if (!user) return res.status(400).json('user not found')
 
@@ -156,9 +148,7 @@ export const uploadProfileBanner = async (req: Request, res: Response) => {
     user.profileBanner = image
 
     await user.save()
-
     res.status(200).json(user)
-
   } catch (error) {
     return res.status(500).json(error)
 
@@ -179,7 +169,6 @@ export const uploadProfilePicture = async (req: Request, res: Response) => {
     user.profilePicture = image
 
     await user.save()
-
     res.status(200).json(user)
   } catch (err) {
     return res.status(500).json(err)

@@ -3,8 +3,6 @@ import Comment from '../models/commentModel'
 import Reply, { Replies } from '../models/replyModel'
 import User, { Users } from '../models/userModel'
 
-
-
 export const getAllReplies = async (req: Request, res: Response) => {
   try {
     const replies = await Reply.find().where({ comment: req.params.commentid })
@@ -34,23 +32,23 @@ export const getSingleReplyWithUser = async (req: Request, res: Response) => {
     const reply: Replies | null = await Reply.findById(req.params.id)
     if (!reply) return res.status(400).json('unable to find reply')
 
-    let other = await User.findById(reply.user)
-    // const user = await User.findById(reply.user)
-    // const {
-    //   password,
-    //   updatedAt,
-    //   notifications,
-    //   bio,
-    //   location,
-    //   followers,
-    //   following,
-    //   posts,
-    //   theme,
-    //   email,
-    //   _id,
-    //   ...other
-    // } = user?._doc
-    // if (!user) return res.status(400).json('unable to find user')
+    // let other = await User.findById(reply.user)
+    const user = await User.findById(reply.user)
+    const {
+      password,
+      updatedAt,
+      notifications,
+      bio,
+      location,
+      followers,
+      following,
+      posts,
+      theme,
+      email,
+      _id,
+      ...other
+    } = user?._doc
+    if (!user) return res.status(400).json('unable to find user')
 
     return res.status(200).json({reply, other})
   } catch (error) {
@@ -214,7 +212,7 @@ export const likeUnlikeReply = async (req: Request, res: Response) => {
 
     if (!liker) return res.status(400).json('liker not found')
     let message;
-    // let notification;
+    let notification;
 
 
     if (reply.likes.includes(req.body.userid)) {
@@ -225,28 +223,28 @@ export const likeUnlikeReply = async (req: Request, res: Response) => {
         reply.likes.push(req.body.userid)
         message = 'liked'
 
-        // notification = {
-        //   to: {
-        //     userid: user._id,
-        //     username: user.username
-        //   },
-        //   from: {
-        //     userid: liker._id,
-        //     username: liker.username,
-        //     user: other
-        //   },
-        //   action: {
-        //     actionType: 'liked',
-        //     actionOn: 'reply'
-        //   },
-        //   navToPost: `/replies/${reply._id}`,
-        //   navToUser: `/${liker.username}`,
-        //   message: `${liker.username} liked your post!`,
-        //   commentid: reply.comment._id,
-        //   postid: null,
-        // }
+        notification = {
+          to: {
+            userid: user._id,
+            username: user.username
+          },
+          from: {
+            userid: liker._id,
+            username: liker.username,
+            user: other
+          },
+          action: {
+            actionType: 'liked',
+            actionOn: 'reply'
+          },
+          navToPost: `/replies/${reply._id}`,
+          navToUser: `/${liker.username}`,
+          message: `${liker.username} liked your post!`,
+          commentid: reply.comment._id,
+          postid: null,
+        }
 
-        // user.notifications.push(notification)
+        user.notifications.push(notification)
       } else if (user.username === liker.username) {
         reply.likes.push(req.body.userid)
         message = 'liked'
